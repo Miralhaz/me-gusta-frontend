@@ -1,0 +1,66 @@
+.pagina-cadastro {
+  min-height: 91vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--branco-primario);
+  padding: 32px;
+}
+
+.cartao {
+  width: 820px;
+  max-width: calc(100% - 48px);
+  background: var(--branco-primario);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  overflow: hidden;
+  border: 1px solid #c2c2c2;
+}
+
+.cartao-esquerdo {
+  flex: 1 1 50%;
+  padding: 28px 36px;
+}
+
+.abas {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.abas a {
+  color: var(--texto-titulo);
+  text-decoration: none;
+  margin-right: 8px;
+}
+
+.abas a.ativo {
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.abas .separador {
+  color: #999;
+  margin: 0 6px;
+}
+
+.titulo {
+  margin-top: 32px;
+  margin-bottom: 32px;
+  font-weight: 600;
+  font-size: 22px;
+  color: #222;
+}
+
+@media (max-width: 680px) {
+  .cartao {
+    flex-direction: column;
+  }
+
+  .cartao-direito {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #e6e6e6;
+    padding: 28px 20px;
+  }
+}

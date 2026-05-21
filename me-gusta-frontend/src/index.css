@@ -1,25 +1,29 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
+  --texto: #242020;
+  --texto-titulo: #08060d;
+  --fundo: #ffffff;
+  --borda: #e5e4e7;
+  --fundo-codigo: #f4f3ec;
+  --destaque: #aa3bff;
+  --fundo-destaque: rgba(170, 59, 255, 0.1);
+  --borda-destaque: rgba(170, 59, 255, 0.5);
+  --fundo-social: rgba(244, 243, 236, 0.5);
+  --sombra:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --fonte-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --fonte-titulo: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --fonte-mono: ui-monospace, Consolas, monospace;
 
-  font: 18px/145% var(--sans);
+  --vermelho-primario: #d62828;
+  --amarelo-primario: #ffd166;
+  --branco-primario: #ffffff;
+
+  font: 18px/145% var(--fonte-sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
+  color: var(--texto);
+  background: var(--fundo);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -32,16 +36,16 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
+    --texto: #242020;
+    --texto-titulo: #08060d;
+    --fundo: #16171d;
+    --borda: #2e303a;
+    --fundo-codigo: #1f2028;
+    --destaque: #c084fc;
+    --fundo-destaque: rgba(192, 132, 252, 0.15);
+    --borda-destaque: rgba(192, 132, 252, 0.5);
+    --fundo-social: rgba(47, 48, 58, 0.5);
+    --sombra:
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
   }
 
@@ -52,14 +56,15 @@
 
 body {
   margin: 0;
+  background: var(--branco-primario);
+  color: var(--texto);
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 1126px;
   margin: 0 auto;
   text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -68,9 +73,9 @@ body {
 
 h1,
 h2 {
-  font-family: var(--heading);
+  font-family: var(--fonte-titulo);
   font-weight: 500;
-  color: var(--text-h);
+  color: var(--texto-titulo);
 }
 
 h1 {
@@ -96,16 +101,16 @@ p {
 }
 
 code,
-.counter {
-  font-family: var(--mono);
+.contador {
+  font-family: var(--fonte-mono);
   display: inline-flex;
   border-radius: 4px;
-  color: var(--text-h);
+  color: var(--texto-titulo);
 }
 
 code {
   font-size: 15px;
   line-height: 135%;
   padding: 4px 8px;
-  background: var(--code-bg);
+  background: var(--fundo-codigo);
 }
