@@ -3,7 +3,7 @@ import CadastroForm from '../Cadastro - Formulario/CadastroForm'
 import CadastroLadoDireito from '../Cadastro - Lado Direito/CadastroLadoDireito'
 import './CadastroPage.css'
 
-export default function CadastroPage() {
+export default function CadastroPage({ onNavigarLogin }) {
   const [form, setForm] = useState({ username: '', email: '', password: '', confirm: '' })
 
   function handleChange(evento) {
@@ -23,7 +23,7 @@ export default function CadastroPage() {
           <div className="abas">
             <a className="ativo" href="#">Cadastro</a>
             <span className="separador">|</span>
-            <a href="#">Login</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); onNavigarLogin?.() }}>Login</a>
           </div>
 
           <h2 className="titulo">Realize o cadastro no sistema aqui!</h2>

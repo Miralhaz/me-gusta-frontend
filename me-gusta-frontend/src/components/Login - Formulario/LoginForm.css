@@ -1,0 +1,40 @@
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.campos {
+  display: flex;
+  flex-direction: column;
+}
+
+.formulario label {
+  font-size: 14px;
+  color: var(--texto-titulo);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.formulario input {
+  height: 42px;
+  padding: 0 10px;
+  border: 1px solid #d1d1d1;
+  background-color: var(--branco-primario);
+  color: var(--texto-titulo);
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.12s ease;
+}
+
+.formulario input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--branco-primario) inset !important;
+  -webkit-text-fill-color: var(--texto-titulo) !important;
+  border-color: var(--vermelho-primario) !important;
+}
+
+.formulario input:focus {
+  outline: 2px solid rgba(214, 40, 40, 0.15);
+  border-color: var(--vermelho-primario);
+}
