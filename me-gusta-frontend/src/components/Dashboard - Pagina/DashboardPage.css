@@ -1,0 +1,33 @@
+.pagina-dashboard {
+  min-height: calc(100vh - 56px);
+  background: var(--branco-primario);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboard-linha-topo {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.dashboard-linha-baixo {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  min-height: 300px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-linha-topo,
+  .dashboard-linha-baixo {
+    flex-direction: column;
+  }
+
+  .reposicao-urgente,
+  .movimentacoes {
+    width: 100%;
+  }
+}

@@ -3,7 +3,7 @@ import LoginForm from '../Login - Formulario/LoginForm'
 import LoginLadoDireito from '../Login - Lado Direito/LoginLadoDireito'
 import './LoginPage.css'
 
-export default function LoginPage({ onNavigarCadastro }) {
+export default function LoginPage({ onNavigarCadastro, onNavigarDashboard }) {
   const [form, setForm] = useState({ email: '', password: '' })
 
   function handleChange(evento) {
@@ -31,7 +31,7 @@ export default function LoginPage({ onNavigarCadastro }) {
           <LoginForm form={form} onChange={handleChange} onSubmit={handleSubmit} />
         </div>
 
-        <LoginLadoDireito />
+        <LoginLadoDireito onNavigarDashboard={onNavigarDashboard}/>
       </div>
     </div>
   )
