@@ -2,18 +2,54 @@ import { useState } from 'react'
 import CadastroForm from '../Cadastro - Formulario/CadastroForm'
 import CadastroLadoDireito from '../Cadastro - Lado Direito/CadastroLadoDireito'
 import './CadastroPage.css'
+import api from '../../provider/api'
+import Swal from 'sweetalert2'
 
 export default function CadastroPage({ onNavigarLogin }) {
-  const [form, setForm] = useState({ username: '', email: '', password: '', confirm: '' })
+  const [formulario, setFormulario] = useState({ nome: '', email: '', senha: '', confirmacao: '' })
 
-  function handleChange(evento) {
+  function atualizarDados(evento) {
     const { name, value } = evento.target
-    setForm((atual) => ({ ...atual, [name]: value }))
+    setFormulario((atual) => ({ ...atual, [name]: value }))
   }
 
-  function handleSubmit(evento) {
+  function enviarDados(evento) {
     evento.preventDefault()
-    alert('Cadastro enviado (demo): ' + JSON.stringify(form, null, 2))
+
+    if (formulario.senha !== formulario.confirmacao) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro de Cadastro',
+        text: 'As senhas não coincidem. Por favor, verifique e tente novamente.',
+        timer: 2000,
+        showConfirmButton: false,
+      })
+      return
+    }
+
+    api.post("/usuarios", {
+      nome: formulario.nome,
+      email: formulario.email,
+      senha: formulario.senha
+    })
+    .then((resposta) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Cadastro realizado com sucesso!',
+        timer: 2000,
+        showConfirmButton: false,
+      })
+      onNavigarLogin?.()
+    })
+    .catch((erro) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro de Cadastro',
+        text: 'Ocorreu um erro ao realizar o cadastro.',
+        timer: 2000,
+        showConfirmButton: false,
+      })
+    })
   }
 
   return (
@@ -28,7 +64,7 @@ export default function CadastroPage({ onNavigarLogin }) {
 
           <h2 className="titulo">Realize o cadastro no sistema aqui!</h2>
 
-          <CadastroForm form={form} onChange={handleChange} onSubmit={handleSubmit} />
+          <CadastroForm form={formulario} onChange={atualizarDados} onSubmit={enviarDados} />
         </div>
 
         <CadastroLadoDireito />

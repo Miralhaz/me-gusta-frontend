@@ -5,7 +5,7 @@ export default function CadastroForm({ form, onChange, onSubmit }) {
         <form id="register-form" className="formulario" onSubmit={onSubmit}>
             <div className="campos">
                 <label> Nome de Usuário: </label>
-                <input name="username" value={form.username} onChange={onChange} />
+                <input name="nome" value={form.nome} onChange={onChange} />
             </div>
 
             <div className="campos">
@@ -15,12 +15,12 @@ export default function CadastroForm({ form, onChange, onSubmit }) {
 
             <div className="campos">
                 <label> Senha: </label>
-                <input name="password" type="password" value={form.password} onChange={onChange} />
+                <input name="senha" type="password" value={form.senha} onChange={onChange} />
             </div>
             
             <div className="campos">
                 <label> Confirmar Senha: </label>
-                <input name="confirm" type="password" value={form.confirm} onChange={onChange} />
+                <input name="confirmacao" type="password" value={form.confirmacao} onChange={onChange} />
             </div>
         </form>
     )
