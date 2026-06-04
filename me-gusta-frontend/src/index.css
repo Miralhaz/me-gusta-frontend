@@ -56,7 +56,7 @@
 
 body {
   margin: 0;
-  background: var(--branco-primario);
+  background: var(--texto-titulo);
   color: var(--texto);
 }
 

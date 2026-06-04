@@ -10,7 +10,7 @@ export default function LoginForm({ form, onChange, onSubmit }) {
 
             <div className="campos">
                 <label> Senha: </label>
-                <input name="password" type="password" value={form.password} onChange={onChange} />
+                <input name="senha" type="password" value={form.senha} onChange={onChange} />
             </div>
         </form>
     )
