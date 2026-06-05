@@ -7,7 +7,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  background: linear-gradient(180deg, var(--amarelo-primario) 0%, rgba(255,209,102,0.08) 100%);
+  /* background-image: url('../../assets/Logo\ -\ megusta.png'); */
+  background: linear-gradient(135deg, #e63232 10%, #642525 90%);
+  background-size: cover;
 }
 
 .pizza {

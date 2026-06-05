@@ -15,7 +15,7 @@
   --fonte-titulo: system-ui, 'Segoe UI', Roboto, sans-serif;
   --fonte-mono: ui-monospace, Consolas, monospace;
 
-  --vermelho-primario: #d62828;
+  --vermelho-primario: #470a0a;
   --amarelo-primario: #ffd166;
   --branco-primario: #ffffff;
 
@@ -58,6 +58,7 @@ body {
   margin: 0;
   background: var(--texto-titulo);
   color: var(--texto);
+  overflow: hidden;
 }
 
 #root {
