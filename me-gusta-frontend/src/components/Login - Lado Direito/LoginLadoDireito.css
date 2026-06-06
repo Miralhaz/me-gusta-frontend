@@ -5,11 +5,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   gap: 20px;
-  /* background-image: url('../../assets/Logo\ -\ megusta.png'); */
   background: linear-gradient(135deg, #e63232 10%, #642525 90%);
   background-size: cover;
+}
+
+.cartao-direito .logo-megusta-login{
+  width: 55%;
+  height: 60%;
+  display: flex;
+  position: relative;
+  z-index: 10;
+  box-shadow: 6px 6px 0px 0px var(--vermelho-primario);
+
 }
 
 .pizza {
