@@ -56,6 +56,14 @@ const ICONES = {
   ),
 }
 
+const ICONE_SAIR = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <polyline points="16 17 21 12 16 7" />
+    <line x1="21" y1="12" x2="9" y2="12" />
+  </svg>
+)
+
 const ITENS = [
   { key: 'dashboard', label: 'Dashboard' },
   { key: 'insumos',   label: 'Insumos'   },
@@ -66,22 +74,27 @@ const ITENS = [
   { key: 'relatorios',label: 'Relatórios'},
 ]
 
-export default function DashboardNavbar({ paginaAtiva = 'dashboard', onNavegar }) {
+export default function DashboardNavbar({ paginaAtiva = 'dashboard', onNavigar, onSair }) {
   return (
     <nav className="navbar">
-      <div className="navbar-logo">🍕</div>
+      <div className="navbar-logo">🥟</div>
 
       {ITENS.map(({ key, label }) => (
         <a
           key={key}
           className={`navbar-item${paginaAtiva === key ? ' ativo' : ''}`}
           href="#"
-          onClick={(e) => { e.preventDefault(); onNavegar?.(key) }}
+          onClick={(e) => { e.preventDefault(); onNavigar?.(key) }}
         >
           <span className="navbar-icone">{ICONES[key]}</span>
           {label}
         </a>
       ))}
+
+      <a className="navbar-item navbar-sair" href="#" onClick={(e) => { e.preventDefault(); console.log('clicou sair', onSair); onSair?.() }}>
+        <span className="navbar-icone">{ICONE_SAIR}</span>
+        Sair
+      </a>
     </nav>
   )
 }

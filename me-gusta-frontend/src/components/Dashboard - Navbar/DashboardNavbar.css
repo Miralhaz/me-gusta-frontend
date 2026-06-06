@@ -54,3 +54,18 @@
   align-items: center;
   flex-shrink: 0;
 }
+
+.navbar-sair {
+  margin-left: auto;
+}
+
+.navbar-sair:hover {
+  background: rgba(214, 40, 40, 0.07);
+  color: var(--vermelho-primario);
+}
+
+.navbar-sair:hover .navbar-icone svg line,
+.navbar-sair:hover .navbar-icone svg polyline,
+.navbar-sair:hover .navbar-icone svg path {
+  stroke: var(--vermelho-primario);
+}

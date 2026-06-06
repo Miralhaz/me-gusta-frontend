@@ -58,7 +58,7 @@ body {
   margin: 0;
   background: var(--texto-titulo);
   color: var(--texto);
-  overflow: hidden;
+  /*overflow: hidden;*/
 }
 
 #root {

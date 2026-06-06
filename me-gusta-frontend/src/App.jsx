@@ -19,7 +19,9 @@ function App() {
         />
       )}
       {paginaAtiva === "dashboard" && (
-        <DashboardPage />
+        <DashboardPage 
+        onNavigarLogin={() => setPaginaAtiva('login')}
+        />
       )}
     </div>
   )

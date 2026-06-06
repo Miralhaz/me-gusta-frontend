@@ -1,60 +1,144 @@
 import { useState, useEffect, useRef } from 'react'
-import { Chart, LineElement, PointElement, LineController, CategoryScale, LinearScale, Tooltip, Filler } from 'chart.js'
+import { Chart, LineElement, PointElement, LineController, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js'
+import api from '../../provider/api'
 import './GraficoConsumo.css'
-
-Chart.register(LineElement, PointElement, LineController, CategoryScale, LinearScale, Tooltip, Filler)
-
-// Dados mockados — serão substituídos por chamada ao endpoint futuramente
-const DADOS_MOCK = {
-  labels: ['12/03', '13/03', '14/03', '15/03', '16/03', '17/03', '18/03', '19/03'],
-  serie1: [10, 18, 20, 30, 34, 30, 44, 52],
-  serie2: [8,  9,  14, 20, 18, 22, 24, 25],
-}
-
-export default function GraficoConsumo() {
-  const [categoria, setCategoria] = useState('todas')
-  const [periodo,   setPeriodo  ] = useState('7dias')
-
+ 
+Chart.register(LineElement, PointElement, LineController, CategoryScale, LinearScale, Tooltip, Legend)
+ 
+const CORES = ['#4a90d9', '#b47fd4', '#e8734a', '#4ab87a', '#e8c44a', '#d94a7a']
+ 
+const PERIODOS = [
+  { label: '7 dias',  valor: 7  },
+  { label: '15 dias', valor: 15 },
+  { label: '30 dias', valor: 30 },
+]
+ 
+export default function GraficoConsumo({ categorias = [] }) {
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState('todas')
+  const [periodo, setPeriodo] = useState(7)
+  const [carregando, setCarregando] = useState(false)
+  const [dadosGrafico, setDadosGrafico] = useState([])
+ 
   const canvasRef = useRef(null)
   const chartRef  = useRef(null)
-
+ 
   useEffect(() => {
-    if (!canvasRef.current) return
-
+    setCarregando(true)
+ 
+    const requisicao = categoriaSelecionada === 'todas'
+      ? api.post('/categoria-insumos/consumo/geral', { intervalo: periodo })
+      : api.post('/categoria-insumos/consumo', { nomeCategoria: categoriaSelecionada, intervalo: periodo })
+ 
+    requisicao
+      .then((resposta) => {
+        const dados = categoriaSelecionada === 'todas'
+          ? resposta.data
+          : [{ nomeCategoria: categoriaSelecionada, consumos: resposta.data }]
+ 
+        setDadosGrafico(dados)
+      })
+      .catch((erro) => {
+        console.error('Erro ao buscar consumo:', erro)
+      })
+      .finally(() => {
+        setCarregando(false)
+      })
+  }, [categoriaSelecionada, periodo])
+ 
+  // Só renderiza quando o canvas já está no DOM e os dados chegaram
+  useEffect(() => {
+    if (!dadosGrafico.length || !canvasRef.current) return
+    renderizarGrafico(dadosGrafico)
+  }, [dadosGrafico])
+ 
+  // Atualiza automaticamente todo dia às 7h
+  useEffect(() => {
+    function calcularMsAteSeteDaManha() {
+      const agora = new Date()
+      const proximas7h = new Date()
+      proximas7h.setHours(7, 0, 0, 0)
+ 
+      if (agora >= proximas7h) {
+        proximas7h.setDate(proximas7h.getDate() + 1)
+      }
+ 
+      return proximas7h - agora
+    }
+ 
+    function buscarDados() {
+      setCarregando(true)
+ 
+      const requisicao = categoriaSelecionada === 'todas'
+        ? api.post('/categoria-insumos/consumo/geral', { intervalo: periodo })
+        : api.post('/categoria-insumos/consumo', { nomeCategoria: categoriaSelecionada, intervalo: periodo })
+ 
+      requisicao
+        .then((resposta) => {
+          const dados = categoriaSelecionada === 'todas'
+            ? resposta.data
+            : [{ nomeCategoria: categoriaSelecionada, consumos: resposta.data }]
+ 
+          setDadosGrafico(dados)
+        })
+        .catch((erro) => {
+          console.error('Erro ao buscar consumo:', erro)
+        })
+        .finally(() => {
+          setCarregando(false)
+        })
+    }
+ 
+    const timeoutId = setTimeout(() => {
+      buscarDados()
+      const intervaloId = setInterval(buscarDados, 24 * 60 * 60 * 1000)
+      return () => clearInterval(intervaloId)
+    }, calcularMsAteSeteDaManha())
+ 
+    return () => clearTimeout(timeoutId)
+  }, [categoriaSelecionada, periodo])
+ 
+  function renderizarGrafico(dados) {
+    chartRef.current?.destroy()
+ 
+    const todasAsDatas = [...new Set(
+      dados.flatMap(cat => cat.consumos.map(c => c.dtConsumo))
+    )].sort()
+ 
+    const datasets = dados.map((categoria, index) => {
+      const cor = CORES[index % CORES.length]
+ 
+      const pontos = todasAsDatas.map(data => {
+        const consumoDoDia = categoria.consumos.find(c => c.dtConsumo === data)
+        return consumoDoDia ? consumoDoDia.quantidade : 0
+      })
+ 
+      return {
+        label: categoria.nomeCategoria,
+        data: pontos,
+        borderColor: cor,
+        backgroundColor: cor,
+        borderWidth: 2.5,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        pointBackgroundColor: cor,
+        tension: 0.35,
+        fill: false,
+      }
+    })
+ 
+    const labels = todasAsDatas.map(data => {
+      const [, mes, dia] = data.split('-')
+      return `${dia}/${mes}`
+    })
+ 
     chartRef.current = new Chart(canvasRef.current, {
       type: 'line',
-      data: {
-        labels: DADOS_MOCK.labels,
-        datasets: [
-          {
-            data: DADOS_MOCK.serie1,
-            borderColor: '#4a90d9',
-            backgroundColor: 'rgba(74, 144, 217, 0.08)',
-            borderWidth: 2.5,
-            pointRadius: 3,
-            pointHoverRadius: 5,
-            pointBackgroundColor: '#4a90d9',
-            tension: 0.35,
-            fill: false,
-          },
-          {
-            data: DADOS_MOCK.serie2,
-            borderColor: '#b47fd4',
-            backgroundColor: 'rgba(180, 127, 212, 0.08)',
-            borderWidth: 2.5,
-            pointRadius: 3,
-            pointHoverRadius: 5,
-            pointBackgroundColor: '#b47fd4',
-            tension: 0.35,
-            fill: false,
-          },
-        ],
-      },
+      data: { labels, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false },
+          legend: { display: categoriaSelecionada === 'todas' },
           tooltip: {
             backgroundColor: '#fff',
             borderColor: '#e0e0e0',
@@ -79,43 +163,44 @@ export default function GraficoConsumo() {
         },
       },
     })
-
-    return () => {
-      chartRef.current?.destroy()
-    }
-  }, [])
-
+  }
+ 
   return (
     <div className="grafico-consumo">
       <div className="grafico-cabecalho">
-        <span className="grafico-titulo">Consumo por categoria nos últimos 7 dias</span>
-
+        <span className="grafico-titulo">
+          Consumo por categoria nos últimos {periodo} dias
+        </span>
+ 
         <div className="grafico-filtro">
           <select
             className="select-filtro"
-            value={categoria}
-            onChange={(e) => setCategoria(e.target.value)}
+            value={categoriaSelecionada}
+            onChange={(e) => setCategoriaSelecionada(e.target.value)}
           >
             <option value="todas">Todas</option>
-            <option value="laticinios">Laticínios</option>
-            <option value="carnes">Carnes</option>
-            <option value="vegetais">Vegetais</option>
+            {categorias.map((cat) => (
+              <option key={cat.id} value={cat.nome}>{cat.nome}</option>
+            ))}
           </select>
-
+ 
           <select
             className="select-filtro"
             value={periodo}
-            onChange={(e) => setPeriodo(e.target.value)}
+            onChange={(e) => setPeriodo(Number(e.target.value))}
           >
-            <option value="7dias">7 dias</option>
-            <option value="15dias">15 dias</option>
-            <option value="30dias">30 dias</option>
+            {PERIODOS.map((p) => (
+              <option key={p.valor} value={p.valor}>{p.label}</option>
+            ))}
           </select>
         </div>
       </div>
-
+ 
       <div className="grafico-area">
-        <canvas ref={canvasRef} />
+        {carregando
+          ? <span className="grafico-carregando">Carregando...</span>
+          : <canvas ref={canvasRef} />
+        }
       </div>
     </div>
   )
