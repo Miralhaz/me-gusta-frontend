@@ -16,11 +16,29 @@ export default function CadastroPage({ onNavigarLogin }) {
   function enviarDados(evento) {
     evento.preventDefault()
 
-    if (formulario.senha !== formulario.confirmacao) {
+    if (formulario.nome === '' || formulario.email === '' || formulario.senha === '' || formulario.confirmacao === '') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro de Cadastro',
+        text: 'Todos os campos são obrigatórios. Por favor, preencha todos os campos.',
+        timer: 2000,
+        showConfirmButton: false,
+      })
+      return
+    } else if (formulario.senha !== formulario.confirmacao) {
       Swal.fire({
         icon: 'error',
         title: 'Erro de Cadastro',
         text: 'As senhas não coincidem. Por favor, verifique e tente novamente.',
+        timer: 2000,
+        showConfirmButton: false,
+      })
+      return
+    } else if (!/\S+@\S+\.\S+/.test(formulario.email)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro de Cadastro',
+        text: 'O email fornecido é inválido. Por favor, insira um email válido.',
         timer: 2000,
         showConfirmButton: false,
       })
@@ -42,13 +60,23 @@ export default function CadastroPage({ onNavigarLogin }) {
       onNavigarLogin?.()
     })
     .catch((erro) => {
-      Swal.fire({
-        icon: 'error',
-        title: 'Erro de Cadastro',
-        text: 'Ocorreu um erro ao realizar o cadastro.',
-        timer: 2000,
-        showConfirmButton: false,
-      })
+      if (erro.response?.status === 409) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Usuário já foi criado',
+          text: 'Este usuário ou email já foi cadastrado no sistema. Por favor, use outro email ou acesse a página de login.',
+          timer: 3000,
+          showConfirmButton: false,
+        })
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro de Cadastro',
+          text: 'Ocorreu um erro ao realizar o cadastro.',
+          timer: 2000,
+          showConfirmButton: false,
+        })
+      }
     })
   }
 
