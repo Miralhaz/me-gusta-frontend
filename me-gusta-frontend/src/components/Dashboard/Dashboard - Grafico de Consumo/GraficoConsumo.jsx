@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Chart, LineElement, PointElement, LineController, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js'
-import api from '../../provider/api'
+import api from '../../../provider/api'
 import './GraficoConsumo.css'
  
 Chart.register(LineElement, PointElement, LineController, CategoryScale, LinearScale, Tooltip, Legend)

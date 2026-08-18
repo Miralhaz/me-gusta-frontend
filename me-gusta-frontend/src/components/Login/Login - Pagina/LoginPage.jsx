@@ -1,12 +1,15 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import LoginForm from '../Login - Formulario/LoginForm'
 import LoginLadoDireito from '../Login - Lado Direito/LoginLadoDireito'
 import './LoginPage.css'
-import api from '../../provider/api'
+import api from '../../../provider/api'
 import Swal from 'sweetalert2'
 
-export default function LoginPage({ onNavigarCadastro, onNavigarDashboard }) {
+export default function LoginPage() {
+
   const [formulario, setFormulario] = useState({ email: '', senha: '' })
+  const navigate = useNavigate()
 
   function atualizarDados(evento) {
     const { name, value } = evento.target
@@ -29,7 +32,7 @@ export default function LoginPage({ onNavigarCadastro, onNavigarDashboard }) {
         timer: 2000,
         showConfirmButton: false,
       })
-      onNavigarDashboard?.()
+      navigate('/dashboard')
     })
     .catch((erro) => {
       Swal.fire({
@@ -49,9 +52,9 @@ export default function LoginPage({ onNavigarCadastro, onNavigarDashboard }) {
       <div className="cartao">
         <div className="cartao-esquerdo">
           <div className="abas">
-            <a href="#" onClick={(e) => { e.preventDefault(); onNavigarCadastro?.() }}>Cadastro</a>
+            <a href="" onClick={(e) => { e.preventDefault(); navigate('/cadastro') }}>Cadastro</a>
             <span className="separador">|</span>
-            <a className="ativo" href="#">Login</a>
+            <a className="ativo" href="">Login</a>
           </div>
 
           <h2 className="titulo">Faça login no sistema aqui!</h2>

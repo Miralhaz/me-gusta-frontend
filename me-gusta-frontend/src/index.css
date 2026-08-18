@@ -32,6 +32,7 @@
   @media (max-width: 1024px) {
     font-size: 16px;
   }
+  overflow: hidden;
 }
 
 @media (prefers-color-scheme: dark) {

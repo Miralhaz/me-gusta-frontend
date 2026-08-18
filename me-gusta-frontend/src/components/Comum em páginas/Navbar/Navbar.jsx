@@ -1,4 +1,6 @@
-import './DashboardNavbar.css'
+import { NavLink, useNavigate } from 'react-router-dom'
+import './Navbar.css'
+import { sair } from '../../../provider/api'
 
 const ICONES = {
   dashboard: (
@@ -65,33 +67,36 @@ const ICONE_SAIR = (
 )
 
 const ITENS = [
-  { key: 'dashboard', label: 'Dashboard' },
-  { key: 'insumos',   label: 'Insumos'   },
-  { key: 'fogazzas',  label: 'Fogazzas'  },
-  { key: 'estoque',   label: 'Estoque'   },
-  { key: 'compras',   label: 'Compras'   },
-  { key: 'vendas',    label: 'Vendas'    },
-  { key: 'relatorios',label: 'Relatórios'},
+  { key: 'dashboard',  label: 'Dashboard',  path: '/dashboard'  },
+  { key: 'insumos',    label: 'Insumos',    path: '/insumos'    },
+  { key: 'fogazzas',   label: 'Fogazzas',   path: '/fogazzas'   },
+  { key: 'estoque',    label: 'Estoque',    path: '/estoque'    },
+  { key: 'compras',    label: 'Compras',    path: '/compras'    },
+  { key: 'vendas',     label: 'Vendas',     path: '/vendas'     },
+  { key: 'relatorios', label: 'Relatórios', path: '/relatorios' },
 ]
 
-export default function DashboardNavbar({ paginaAtiva = 'dashboard', onNavigar, onSair }) {
+export default function Navbar() {
+
+  const navigate = useNavigate()
+  const handleSair = () => sair(navigate)
+
   return (
     <nav className="navbar">
       <div className="navbar-logo">🥟</div>
 
-      {ITENS.map(({ key, label }) => (
-        <a
+      {ITENS.map(({ key, label, path }) => (
+        <NavLink
           key={key}
-          className={`navbar-item${paginaAtiva === key ? ' ativo' : ''}`}
-          href="#"
-          onClick={(e) => { e.preventDefault(); onNavigar?.(key) }}
+          to={path}
+          className={({ isActive }) => `navbar-item${isActive ? ' ativo' : ''}`}
         >
           <span className="navbar-icone">{ICONES[key]}</span>
           {label}
-        </a>
+        </NavLink>
       ))}
 
-      <a className="navbar-item navbar-sair" href="#" onClick={(e) => { e.preventDefault(); console.log('clicou sair', onSair); onSair?.() }}>
+      <a className="navbar-item navbar-sair" href="#" onClick={(e) => { e.preventDefault(); handleSair() }}>
         <span className="navbar-icone">{ICONE_SAIR}</span>
         Sair
       </a>

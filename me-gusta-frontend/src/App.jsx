@@ -1,29 +1,24 @@
 import './App.css'
-import { useState } from 'react'
-import CadastroPage from './components/Cadastro - Pagina/CadastroPage.jsx'
-import LoginPage from './components/Login - Pagina/LoginPage.jsx'
-import DashboardPage from './components/Dashboard - Pagina/DashboardPage.jsx'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import CadastroPage from './components/Cadastro/Cadastro - Pagina/CadastroPage.jsx'
+import LoginPage from './components/Login/Login - Pagina/LoginPage.jsx'
+import DashboardPage from './components/Dashboard/Dashboard - Pagina/DashboardPage.jsx'
+import InsumosPage from './components/Insumos/Insumos - Pagina/InsumosPage.jsx'
 
 function App() {
-  const [paginaAtiva, setPaginaAtiva] = useState('cadastro')
-
   return (
-    <div>
-      {paginaAtiva === 'cadastro' && (
-        <CadastroPage onNavigarLogin={() => setPaginaAtiva('login')} />
-      )}
-      {paginaAtiva === 'login' && (
-        <LoginPage 
-        onNavigarCadastro={() => setPaginaAtiva('cadastro')}
-        onNavigarDashboard={() => setPaginaAtiva('dashboard')} 
-        />
-      )}
-      {paginaAtiva === "dashboard" && (
-        <DashboardPage 
-        onNavigarLogin={() => setPaginaAtiva('login')}
-        />
-      )}
-    </div>
+  /*  React-router-dom permite com que faça a navegação entre páginas sem depender de vários props
+      Problemas com props: poluição e dificuldade de código e props.
+  */
+    <BrowserRouter>
+      <Routes>
+        <Route path="/cadastro" element={<CadastroPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/insumos" element={<InsumosPage />} />
+        <Route path="*" element={<Navigate to="/cadastro" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

@@ -33,7 +33,7 @@
 }
 
 .navbar-item:hover {
-  background: #f5f5f5;
+  background: rgba(214, 40, 40, 0.07);
 }
 
 .navbar-item.ativo {

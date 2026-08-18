@@ -1,5 +1,5 @@
 import './LoginLadoDireito.css'
-import logoMegusta from '../../assets/logo-megusta.png'
+import logoMegusta from '../../../assets/logo-megusta.png'
 
 export default function LoginLadoDireito({ onNavigarDashboard }) {
   return (

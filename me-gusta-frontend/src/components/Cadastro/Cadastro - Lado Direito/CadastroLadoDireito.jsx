@@ -1,5 +1,5 @@
 import './CadastroLadoDireito.css'
-import logoMegusta from '../../assets/logo-megusta.png'
+import logoMegusta from '../../../assets/logo-megusta.png'
 
 export default function CadastroLadoDireito() {
   return (

@@ -5,4 +5,9 @@ const api = axios.create({
   withCredentials: true, // Permite o envio de cookies nas requisições
 });
 
+export function sair(navigate) {
+  document.cookie = 'token=; path=/; max-age=0'
+  navigate('/login')
+}
+
 export default api;

@@ -1,11 +1,13 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import CadastroForm from '../Cadastro - Formulario/CadastroForm'
 import CadastroLadoDireito from '../Cadastro - Lado Direito/CadastroLadoDireito'
 import './CadastroPage.css'
-import api from '../../provider/api'
+import api from '../../../provider/api'
 import Swal from 'sweetalert2'
 
-export default function CadastroPage({ onNavigarLogin }) {
+export default function CadastroPage() {
+  const navigate = useNavigate()
   const [formulario, setFormulario] = useState({ nome: '', email: '', senha: '', confirmacao: '' })
 
   function atualizarDados(evento) {
@@ -57,7 +59,7 @@ export default function CadastroPage({ onNavigarLogin }) {
         timer: 2000,
         showConfirmButton: false,
       })
-      onNavigarLogin?.()
+      navigate('/login')
     })
     .catch((erro) => {
       if (erro.response?.status === 409) {
@@ -87,7 +89,7 @@ export default function CadastroPage({ onNavigarLogin }) {
           <div className="abas">
             <a className="ativo" href="#">Cadastro</a>
             <span className="separador">|</span>
-            <a href="#" onClick={(e) => { e.preventDefault(); onNavigarLogin?.() }}>Login</a>
+            <a href="" onClick={() => navigate('/login')}>Login</a>
           </div>
 
           <h2 className="titulo">Realize o cadastro no sistema aqui!</h2>
