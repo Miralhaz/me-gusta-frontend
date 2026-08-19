@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import './Navbar.css'
 import { sair } from '../../../provider/api'
+import logoMegusta from '../../../assets/logo-megusta.png'
 
 const ICONES = {
   dashboard: (
@@ -83,7 +84,9 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-logo">🥟</div>
+      <div className="navbar-logo">
+        <img src={logoMegusta} alt="Me Gusta" />
+      </div>
 
       {ITENS.map(({ key, label, path }) => (
         <NavLink

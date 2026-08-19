@@ -9,7 +9,8 @@
 
 .insumos-conteudo {
   flex: 1;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e0e0e0b1;
   border-radius: 8px;
   padding: 20px 24px;
+  background: rgba(224, 224, 224, 0.4);
 }

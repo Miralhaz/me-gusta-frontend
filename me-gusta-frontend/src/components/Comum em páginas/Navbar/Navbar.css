@@ -1,7 +1,7 @@
 .navbar {
   height: 56px;
-  background: var(--branco-primario);
-  border-bottom: 1px solid #e0e0e0;
+  background: linear-gradient(120deg, rgba(224, 224, 224, 1) 60%, #740202 60%);
+  border-bottom: 2px solid #e0e0e0ca;
   display: flex;
   align-items: center;
   padding: 0 20px;
@@ -12,9 +12,18 @@
 }
 
 .navbar-logo {
-  font-size: 30px;
+  width: 46px;
+  height: 42px;
   margin-right: 16px;
   flex-shrink: 0;
+}
+
+.navbar-logo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  border-radius: 6px;
 }
 
 .navbar-item {
@@ -57,15 +66,22 @@
 
 .navbar-sair {
   margin-left: auto;
+  color: var(--branco-primario);
+}
+
+.navbar-sair .navbar-icone svg line,
+.navbar-sair .navbar-icone svg polyline,
+.navbar-sair .navbar-icone svg path {
+  stroke: var(--branco-primario);
 }
 
 .navbar-sair:hover {
   background: rgba(214, 40, 40, 0.07);
-  color: var(--vermelho-primario);
+  color: var(--branco-primario);
 }
 
 .navbar-sair:hover .navbar-icone svg line,
 .navbar-sair:hover .navbar-icone svg polyline,
 .navbar-sair:hover .navbar-icone svg path {
-  stroke: var(--vermelho-primario);
+  stroke: var(--branco-primario);
 }
