@@ -1,0 +1,7 @@
+.status {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.status-ok { color: #2e9e4e; }
+.status-atencao { color: #d99a1b; }
+.status-critico { color: #d9432b; }

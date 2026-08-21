@@ -1,0 +1,87 @@
+.navbar {
+  height: 56px;
+  background: linear-gradient(120deg, rgba(224, 224, 224, 1) 60%, #740202 60%);
+  border-bottom: 2px solid #e0e0e0ca;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 4px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-logo {
+  width: 46px;
+  height: 42px;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.navbar-logo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.navbar-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--texto-titulo);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.navbar-item:hover {
+  background: rgba(214, 40, 40, 0.07);
+}
+
+.navbar-item.ativo {
+  background: rgba(214, 40, 40, 0.07);
+  color: var(--vermelho-primario);
+  font-weight: 600;
+}
+
+.navbar-item.ativo .navbar-icone svg path,
+.navbar-item.ativo .navbar-icone svg rect,
+.navbar-item.ativo .navbar-icone svg line,
+.navbar-item.ativo .navbar-icone svg polyline {
+  stroke: var(--vermelho-primario);
+}
+
+.navbar-icone {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.navbar-sair {
+  margin-left: auto;
+  color: var(--branco-primario);
+}
+
+.navbar-sair .navbar-icone svg line,
+.navbar-sair .navbar-icone svg polyline,
+.navbar-sair .navbar-icone svg path {
+  stroke: var(--branco-primario);
+}
+
+.navbar-sair:hover {
+  background: rgba(214, 40, 40, 0.07);
+  color: var(--branco-primario);
+}
+
+.navbar-sair:hover .navbar-icone svg line,
+.navbar-sair:hover .navbar-icone svg polyline,
+.navbar-sair:hover .navbar-icone svg path {
+  stroke: var(--branco-primario);
+}

@@ -32,6 +32,7 @@
   @media (max-width: 1024px) {
     font-size: 16px;
   }
+  overflow: hidden;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -63,7 +64,7 @@ body {
 
 #root {
   width: 100%;
-  max-width: 1126px;
+  max-width: none;
   margin: 0 auto;
   text-align: center;
   min-height: 100svh;
