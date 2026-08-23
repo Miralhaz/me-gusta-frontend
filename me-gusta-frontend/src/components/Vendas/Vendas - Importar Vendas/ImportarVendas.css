@@ -1,0 +1,25 @@
+.importar-vendas {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.importar-vendas-arquivo {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(136, 136, 136, 0.5);
+  border-radius: 8px;
+  background-color: #fff;
+  color: #444;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.importar-vendas-arquivo:hover {
+  border-color: var(--vermelho-primario);
+}
+
+.importar-vendas-dica {
+  font-size: 0.85rem;
+  color: #888;
+}
