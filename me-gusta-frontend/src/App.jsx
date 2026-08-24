@@ -4,6 +4,7 @@ import CadastroPage from './components/Cadastro/Cadastro - Pagina/CadastroPage.j
 import LoginPage from './components/Login/Login - Pagina/LoginPage.jsx'
 import DashboardPage from './components/Dashboard/Dashboard - Pagina/DashboardPage.jsx'
 import InsumosPage from './components/Insumos/Insumos - Pagina/InsumosPage.jsx'
+import RelatoriosPage from './components/Relatorios/Relatorios - Pagina/RelatoriosPage.jsx'
 import EstoquePage from './components/Estoque/Estoque - Pagina/EstoquePage.jsx'
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/insumos" element={<InsumosPage />} />
+        <Route path="/relatorios" element={<RelatoriosPage />} />
         <Route path="/estoque" element={<EstoquePage />} />
         <Route path="*" element={<Navigate to="/cadastro" replace />} />
       </Routes>
