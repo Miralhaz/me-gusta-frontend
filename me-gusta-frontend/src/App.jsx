@@ -6,6 +6,7 @@ import DashboardPage from './components/Dashboard/Dashboard - Pagina/DashboardPa
 import InsumosPage from './components/Insumos/Insumos - Pagina/InsumosPage.jsx'
 import RelatoriosPage from './components/Relatorios/Relatorios - Pagina/RelatoriosPage.jsx'
 import EstoquePage from './components/Estoque/Estoque - Pagina/EstoquePage.jsx'
+import FogazzasPage from './components/Fogazzas/Fogazzas - Pagina/FogazzasPage.jsx'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/relatorios" element={<RelatoriosPage />} />
         <Route path="/estoque" element={<EstoquePage />} />
         <Route path="*" element={<Navigate to="/cadastro" replace />} />
+        <Route path="/fogazzas" element={<FogazzasPage />} />
       </Routes>
     </BrowserRouter>
   )
