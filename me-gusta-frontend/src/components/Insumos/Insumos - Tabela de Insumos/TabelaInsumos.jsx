@@ -21,13 +21,13 @@ export default function TabelaInsumos({ insumos }) {
       </thead>
       <tbody>
         {insumos.map((insumo) => (
-          <tr key={insumo.codigo}>
-            <td>{insumo.codigo}</td>
+          <tr key={insumo.codigoInsumo}>
+            <td>{insumo.codigoInsumo}</td>
             <td>{insumo.nome}</td>
-            <td>{insumo.categoria}</td>
-            <td>{insumo.dataCadastro}</td>
+            <td>{insumo.insumoCategoria.nome}</td>
+            <td>{insumo.dtCadastro}</td>
             <td>{insumo.giroEstoque}</td>
-            <td><StatusBadge status={insumo.status} /></td>
+            <td><StatusBadge status={insumo.tipoStatus.nome} /></td>
           </tr>
         ))}
       </tbody>
