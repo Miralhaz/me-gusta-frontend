@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import api from '../../../provider/api'
 import Navbar from '../../Comum em páginas/Navbar/Navbar'
 import Modal from '../../Comum em páginas/Modal/Modal'
@@ -24,13 +24,29 @@ export default function InsumosPage() {
   }
 
   function buscarInsumos() {
-    api.get('/insumos', { params: { categoria: categoriaAtiva, busca } })
+    api.get('/insumos')
       .then((res) => setInsumos(res.data))
       .catch((e) => console.error('Erro ao buscar insumos:', e))
   }
 
   useEffect(buscarCategorias, [])
-  useEffect(buscarInsumos, [categoriaAtiva, busca])
+  useEffect(buscarInsumos, [])
+
+  const insumosFiltrados = useMemo(() => {
+    const termo = busca.trim().toLowerCase()
+    return insumos.filter((insumo) => {
+      const bateCategoria =
+        categoriaAtiva === 'todos' ||
+        insumo.insumoCategoria?.nome === categoriaAtiva
+
+      const bateBusca =
+        termo === '' ||
+        insumo.nome.toLowerCase().includes(termo) ||
+        insumo.codigoInsumo.toLowerCase().includes(termo)
+
+      return bateCategoria && bateBusca
+    })
+  }, [insumos, categoriaAtiva, busca])
 
   const fecharModal = () => setModalAberto(null)
 
@@ -55,7 +71,7 @@ export default function InsumosPage() {
             onNovoInsumo={() => setModalAberto('insumo')}
             onConfigurarGiro={() => setModalAberto('giro')}
           />
-          <Tabela insumos={insumos} />
+          <Tabela insumos={insumosFiltrados} />
         </div>
       </div>
 

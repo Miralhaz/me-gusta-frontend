@@ -2,10 +2,12 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  align-items: center;
+  justify-content: center;
 }
 
 .insumos-tabela thead th {
-  text-align: left;
+  text-align: center;
   padding: 10px 8px;
   border-bottom: 2px solid #333;
   font-weight: 700;
@@ -13,6 +15,7 @@
 }
 
 .insumos-tabela tbody td {
+  text-align: center;
   padding: 12px 8px;
   border-bottom: 1px solid #eee;
   color: #333;
