@@ -19,8 +19,15 @@ function lerVendasSalvas() {
   }
 }
 
+function dataAtualFormatada() {
+  const hoje = new Date()
+  const dia = String(hoje.getDate()).padStart(2, '0')
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0')
+  return `${dia}/${mes}/${hoje.getFullYear()}`
+}
+
 function formatarData(dataVenda) {
-  if (!dataVenda) return null
+  if (!dataVenda) return dataAtualFormatada()
   const [ano, mes, dia] = String(dataVenda).split('-')
   if (!ano || !mes || !dia) return null
   return `${dia}/${mes}/${ano}`
