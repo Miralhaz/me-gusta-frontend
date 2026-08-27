@@ -1,0 +1,14 @@
+.vendas-pagina {
+  min-height: calc(100vh - 100px);
+  background: var(--branco-primario);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.vendas-conteudo {
+  border: 1px solid #e0e0e0b1;
+  border-radius: 8px;
+  padding: 20px 24px;
+  background: rgba(224, 224, 224, 0.4);
+}
