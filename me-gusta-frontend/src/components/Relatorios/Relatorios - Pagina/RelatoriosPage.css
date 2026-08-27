@@ -1,0 +1,99 @@
+.pagina-relatorios {
+  min-height: calc(100vh - 56px);
+  background: var(--branco-primario);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.relatorios-container {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.relatorios-tabela-wrapper {
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.relatorios-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.relatorios-tabela thead th {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--borda);
+  font-weight: 700;
+  color: var(--texto-titulo);
+}
+
+.relatorios-tabela tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--borda);
+  color: #333;
+}
+
+.relatorios-tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.rel-id a {
+  color: var(--vermelho-primario);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.rel-acao {
+  text-align: right;
+}
+
+.botao-baixar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.botao-baixar:hover {
+  background: rgba(214, 40, 40, 0.07);
+  color: var(--vermelho-primario);
+  border-color: var(--vermelho-primario);
+}
+
+.icone-download svg {
+  display: block;
+}
+
+.relatorios-espaco-vazio {
+  min-height: 220px;
+  border: 1px solid var(--borda);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  background: transparent;
+}
+
+@media (max-width: 900px) {
+  .relatorios-container {
+    padding: 0 12px;
+  }
+
+  .relatorios-tabela thead th {
+    font-size: 0.9rem;
+  }
+}
