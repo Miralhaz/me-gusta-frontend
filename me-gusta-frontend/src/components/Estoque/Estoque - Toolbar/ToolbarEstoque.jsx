@@ -1,7 +1,7 @@
 import './ToolbarEstoque.css'
 
 export default function ToolbarEstoque({ categorias, categoriaAtiva, onCategoriaChange,
-  busca, onBuscaChange, onNovaSaida }) {
+  busca, onBuscaChange, onNovaSaida, onNovaEntrada }) {
 
   return (
     <div className="estoque-toolbar">
@@ -20,6 +20,11 @@ export default function ToolbarEstoque({ categorias, categoriaAtiva, onCategoria
         <button type="button" className="botao-outline" onClick={onNovaSaida}>
           + Saída de Insumo
         </button>
+
+        <button type="button" className="botao-outline" onClick={onNovaEntrada}>
+          + Entrada de Insumo
+        </button>
+
       </div>
 
       <input
