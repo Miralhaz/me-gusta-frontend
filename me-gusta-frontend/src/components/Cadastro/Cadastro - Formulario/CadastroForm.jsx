@@ -5,7 +5,7 @@ export default function CadastroForm({ form, onChange, onSubmit }) {
         <form id="register-form" className="formulario" onSubmit={onSubmit}>
             <div className="campos">
                 <label> Nome de Usuário: </label>
-                <input name="nome" value={form.nome} onChange={onChange} />
+                <input name="nome" type='text' value={form.nome} onChange={onChange} />
             </div>
 
             <div className="campos">
