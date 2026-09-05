@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import api from '../../../provider/api'
+import Status from '../../Comum em páginas/Status/Status'
+import { normalizarStatus } from '../../../utils/estoque'
 
 export default function EditarInsumo({
   insumo,
   categorias,
   unidades,
-  tiposStatus,
   onEditado,
   onFechar,
 }) {
@@ -13,7 +14,6 @@ export default function EditarInsumo({
   const [codigoInsumo, setCodigoInsumo] = useState(insumo.codigoInsumo)
   const [categoria, setCategoria] = useState(insumo.insumoCategoria?.id ?? '')
   const [unidade, setUnidade] = useState(insumo.unidadeInsumo?.id ?? '')
-  const [status, setStatus] = useState(insumo.tipoStatus?.id ?? '')
   const [estoqueMinimo, setEstoqueMinimo] = useState(insumo.estoqueMinimo)
   const [quantidadeAtual, setQuantidadeAtual] = useState(insumo.quantidadeAtual)
   const [ativo, setAtivo] = useState(insumo.ativo)
@@ -21,7 +21,7 @@ export default function EditarInsumo({
   const [erro, setErro] = useState(null)
 
   const podeEnviar = Boolean(
-    nome.trim() && codigoInsumo.trim() && categoria && unidade && status
+    nome.trim() && codigoInsumo.trim() && categoria && unidade
   )
 
   async function handleSubmit(e) {
@@ -38,7 +38,6 @@ export default function EditarInsumo({
         ativo,
         fkCategoriaInsumo: Number(categoria),
         fkUnidadeMedida: Number(unidade),
-        fkStatus: Number(status),
       })
       onEditado?.()
       onFechar()
@@ -82,10 +81,9 @@ export default function EditarInsumo({
 
       <label>
         Status no estoque
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option value="">Selecione</option>
-          {tiposStatus.map((s) => <option key={s.id} value={s.id}>{s.nome}</option>)}
-        </select>
+        <div className="form-cadastro__status-somente-leitura">
+          <Status status={normalizarStatus(insumo.tipoStatus?.nome)} />
+        </div>
       </label>
 
       <label>
