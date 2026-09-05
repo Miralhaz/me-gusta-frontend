@@ -163,7 +163,6 @@ export default function EstoquePage() {
             insumo={itemSelecionado.original}
             categorias={referencias.categorias}
             unidades={referencias.unidades}
-            tiposStatus={referencias.tiposStatus}
             onEditado={atualizarEstoque}
             onFechar={fecharModal}
           />
