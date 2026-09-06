@@ -12,6 +12,7 @@ import './InsumosPage.css'
 export default function InsumosPage() {
   const [categorias, setCategorias] = useState([])
   const [insumos, setInsumos] = useState([])
+  const [unidadeMedida, setUnidadeMedida] = useState([])
   const [categoriaAtiva, setCategoriaAtiva] = useState('todos')
   const [busca, setBusca] = useState('')
   const [modoVisualizacao, setModoVisualizacao] = useState('lista')
@@ -29,8 +30,15 @@ export default function InsumosPage() {
       .catch((e) => console.error('Erro ao buscar insumos:', e))
   }
 
+  function buscarUnidadeMedida() {
+    api.get('/unidade-medidas')
+      .then((res) => setUnidadeMedida(res.data))
+      .catch((e) => console.error('Erro ao buscar unidades de medida:', e))
+  }
+
   useEffect(buscarCategorias, [])
   useEffect(buscarInsumos, [])
+  useEffect(buscarUnidadeMedida, [])
 
   const insumosFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase()
@@ -80,7 +88,7 @@ export default function InsumosPage() {
       </Modal>
 
       <Modal aberto={modalAberto === 'insumo'} onFechar={fecharModal} titulo="Cadastro de um novo insumo">
-        <CadastroInsumo categorias={categorias} onCadastrado={buscarInsumos} onFechar={fecharModal} />
+        <CadastroInsumo categorias={categorias} unidadeMedida={unidadeMedida} onCadastrado={buscarInsumos} onFechar={fecharModal} />
       </Modal>
 
       <Modal aberto={modalAberto === 'giro'} onFechar={fecharModal} titulo="Configurar giro de estoque">
