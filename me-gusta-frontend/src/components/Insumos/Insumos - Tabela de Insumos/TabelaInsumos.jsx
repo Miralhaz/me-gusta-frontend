@@ -1,8 +1,7 @@
-import StatusBadge from '../../Comum em páginas/Status/Status'
 import './TabelaInsumos.css'
 
 export default function TabelaInsumos({ insumos }) {
-    
+
   if (insumos.length === 0) {
     return <p className="insumos-tabela-vazia">Nenhum insumo encontrado.</p>
   }
@@ -16,7 +15,7 @@ export default function TabelaInsumos({ insumos }) {
           <th>Categoria</th>
           <th>Data de cadastro</th>
           <th>Giro de Estoque (mês)</th>
-          <th>Status no Estoque</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
@@ -27,7 +26,9 @@ export default function TabelaInsumos({ insumos }) {
             <td>{insumo.insumoCategoria.nome}</td>
             <td>{insumo.dtCadastro}</td>
             <td>{insumo.giroEstoque}</td>
-            <td><StatusBadge status={insumo.tipoStatus.nome} /></td>
+            <td style={{ color: insumo.ativo ? 'green' : 'red', fontWeight: 'bold' }}>
+              {insumo.ativo ? 'ATIVO' : 'INATIVO'}
+            </td>
           </tr>
         ))}
       </tbody>

@@ -24,7 +24,7 @@ export default function InsumosPage() {
   }
 
   function buscarInsumos() {
-    api.get('/insumos')
+    api.get('/insumos/geral')
       .then((res) => setInsumos(res.data))
       .catch((e) => console.error('Erro ao buscar insumos:', e))
   }
@@ -58,7 +58,6 @@ export default function InsumosPage() {
           categorias={categorias}
           categoriaAtiva={categoriaAtiva}
           onSelecionarCategoria={setCategoriaAtiva}
-          onNovaCategoria={() => setModalAberto('categoria')}
         />
 
         <div className="insumos-conteudo">
@@ -69,6 +68,7 @@ export default function InsumosPage() {
             modoVisualizacao={modoVisualizacao}
             onModoVisualizacaoChange={setModoVisualizacao}
             onNovoInsumo={() => setModalAberto('insumo')}
+            onNovaCategoria={() => setModalAberto('categoria')}
             onConfigurarGiro={() => setModalAberto('giro')}
           />
           <Tabela insumos={insumosFiltrados} />
