@@ -1,25 +1,58 @@
+import { useState, useEffect } from 'react'
 import Navbar from '../../Comum em páginas/Navbar/Navbar'
+import api from '../../../provider/api'
 import './RelatoriosPage.css'
 import Swal from 'sweetalert2'
 
-const mockRelatorios = [
-  { id: 'Relatório 01', data: '22/03/2026', horario: '08:00 - 17:00', tamanho: '10 Mb' },
-  { id: 'Relatório 02', data: '23/03/2026', horario: '08:00 - 17:00', tamanho: '6 Mb' },
-  { id: 'Relatório 03', data: '24/03/2026', horario: '08:00 - 17:00', tamanho: '5 Mb' },
-  { id: 'Relatório 04', data: '25/03/2026', horario: '08:00 - 17:00', tamanho: '8 Mb' },
-]
-
 export default function RelatoriosPage() {
+  const [relatorios, setRelatorios] = useState([])
+  const [carregando, setCarregando] = useState(true)
+
+  useEffect(() => {
+    api.get('/relatorios')
+      .then((res) => setRelatorios(res.data))
+      .catch((e) => console.error('Erro ao buscar relatórios:', e))
+      .finally(() => setCarregando(false))
+  }, [])
 
   function handleDownload(rel) {
-    console.log('Download simulado:', rel)
-    Swal.fire({
-      icon: 'success',
-      title: 'Download simulado',
-      text: `${rel.id} - PDF`,
-      timer: 1200,
-      showConfirmButton: false,
-    })
+    api.get(`/relatorios/${rel.id}/pdf`, { responseType: 'blob' })
+      .then((res) => {
+        const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `relatorio-${rel.id}.pdf`)
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        window.URL.revokeObjectURL(url)
+        Swal.fire({
+          icon: 'success',
+          title: 'Download iniciado',
+          text: `${rel.id} - PDF`,
+          timer: 1200,
+          showConfirmButton: false,
+        })
+      })
+      .catch((e) => {
+        console.error('Erro ao baixar relatório:', e)
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro ao baixar',
+          text: 'Não foi possível baixar o relatório.',
+        })
+      })
+  }
+
+  if (carregando) {
+    return (
+      <>
+        <Navbar />
+        <div className="pagina-relatorios">
+          <div className="relatorios-container">Carregando relatórios...</div>
+        </div>
+      </>
+    )
   }
 
   return (
@@ -40,7 +73,7 @@ export default function RelatoriosPage() {
                 </tr>
               </thead>
               <tbody>
-                {mockRelatorios.map((r, idx) => (
+                {relatorios.map((r, idx) => (
                   <tr key={idx}>
                     <td className="rel-id"><a href="#" onClick={(e) => e.preventDefault()}>{r.id}</a></td>
                     <td>{r.data}</td>
