@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import api from '../../../provider/api'
 import Navbar from '../../Comum em páginas/Navbar/Navbar'
 import Modal from '../../Comum em páginas/Modal/Modal'
@@ -55,12 +56,15 @@ function mapInsumoParaItem(insumo) {
 }
 
 export default function EstoquePage() {
+  const [searchParams] = useSearchParams()
+  const abrirEntradaInicial = searchParams.get('abrirEntrada') === 'true'
+
   const [referencias, setReferencias] = useState(REFERENCIAS_VAZIAS)
   const [todosItens, setTodosItens] = useState([])
   const [lotesPorInsumo, setLotesPorInsumo] = useState(new Map())
   const [categoriaAtiva, setCategoriaAtiva] = useState('todos')
   const [busca, setBusca] = useState('')
-  const [modalAberto, setModalAberto] = useState(null)
+  const [modalAberto, setModalAberto] = useState(abrirEntradaInicial ? 'entrada' : null)
   const [itemSelecionado, setItemSelecionado] = useState(null)
 
   const buscarReferencias = useCallback(() => {

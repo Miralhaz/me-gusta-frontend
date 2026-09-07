@@ -19,19 +19,19 @@ export default function FogazzasPage() {
 
   function buscarCategorias() {
     api.get('/categoria-fogazza')
-      .then((res) => setCategorias(res.data))
-      .catch((e) => console.error('Erro ao buscar categorias:', e))
+      .then((res) => setCategorias(Array.isArray(res.data) ? res.data : []))
+      .catch((e) => {
+        if (e.response?.status !== 204) console.error('Erro ao buscar categorias:', e)
+        setCategorias([])
+      })
   }
 
   function buscarFogazzas() {
     api.get('/fogazzas')
-      .then((res) => setFogazzas(res.data))
+      .then((res) => setFogazzas(Array.isArray(res.data) ? res.data : []))
       .catch((e) => {
-        if (e.response?.status === 204) {
-          setFogazzas([])
-        } else {
-          console.error('Erro ao buscar fogazzas:', e)
-        }
+        if (e.response?.status !== 204) console.error('Erro ao buscar fogazzas:', e)
+        setFogazzas([])
       })
   }
 

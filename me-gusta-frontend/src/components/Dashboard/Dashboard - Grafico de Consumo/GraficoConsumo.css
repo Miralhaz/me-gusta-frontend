@@ -54,3 +54,24 @@
   flex: 1;
   min-height: 200px;
 }
+
+.grafico-vazio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 200px;
+  color: #888;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.grafico-carregando {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 200px;
+  color: #888;
+  font-size: 14px;
+}
