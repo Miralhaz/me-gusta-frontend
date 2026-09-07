@@ -1,0 +1,44 @@
+.compras-pagina {
+  min-height: calc(100vh - 100px);
+  background: var(--branco-primario);
+  padding: 24px;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.compras-conteudo {
+  flex: 1;
+  border: 1px solid #e0e0e0b1;
+  border-radius: 8px;
+  padding: 20px 24px;
+  background: rgba(224, 224, 224, 0.4);
+}
+
+.modal-acoes {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.botao-secundario {
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.botao-secundario:hover {
+  background-color: #f5f5f5;
+  border-color: #999;
+}
+
+.botao-secundario:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

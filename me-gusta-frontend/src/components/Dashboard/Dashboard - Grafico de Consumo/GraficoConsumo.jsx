@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Chart, LineElement, PointElement, LineController, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js'
 import api from '../../../provider/api'
 import './GraficoConsumo.css'
@@ -14,6 +14,7 @@ const PERIODOS = [
 ]
  
 export default function GraficoConsumo({ categorias = [] }) {
+  const cats = Array.isArray(categorias) ? categorias : []
   const [categoriaSelecionada, setCategoriaSelecionada] = useState('todas')
   const [periodo, setPeriodo] = useState(7)
   const [carregando, setCarregando] = useState(false)
@@ -22,82 +23,13 @@ export default function GraficoConsumo({ categorias = [] }) {
   const canvasRef = useRef(null)
   const chartRef  = useRef(null)
  
-  useEffect(() => {
-    setCarregando(true)
+  function temDados(dados) {
+    return dados.length > 0 && dados.some(cat => cat.consumos && cat.consumos.length > 0)
+  }
  
-    const requisicao = categoriaSelecionada === 'todas'
-      ? api.post('/categoria-insumos/consumo/geral', { intervalo: periodo })
-      : api.post('/categoria-insumos/consumo', { nomeCategoria: categoriaSelecionada, intervalo: periodo })
+  const renderizarGrafico = useCallback((dados) => {
+    if (!canvasRef.current || !temDados(dados)) return
  
-    requisicao
-      .then((resposta) => {
-        const dados = categoriaSelecionada === 'todas'
-          ? resposta.data
-          : [{ nomeCategoria: categoriaSelecionada, consumos: resposta.data }]
- 
-        setDadosGrafico(dados)
-      })
-      .catch((erro) => {
-        console.error('Erro ao buscar consumo:', erro)
-      })
-      .finally(() => {
-        setCarregando(false)
-      })
-  }, [categoriaSelecionada, periodo])
- 
-  // Só renderiza quando o canvas já está no DOM e os dados chegaram
-  useEffect(() => {
-    if (!dadosGrafico.length || !canvasRef.current) return
-    renderizarGrafico(dadosGrafico)
-  }, [dadosGrafico])
- 
-  // Atualiza automaticamente todo dia às 7h
-  useEffect(() => {
-    function calcularMsAteSeteDaManha() {
-      const agora = new Date()
-      const proximas7h = new Date()
-      proximas7h.setHours(7, 0, 0, 0)
- 
-      if (agora >= proximas7h) {
-        proximas7h.setDate(proximas7h.getDate() + 1)
-      }
- 
-      return proximas7h - agora
-    }
- 
-    function buscarDados() {
-      setCarregando(true)
- 
-      const requisicao = categoriaSelecionada === 'todas'
-        ? api.post('/categoria-insumos/consumo/geral', { intervalo: periodo })
-        : api.post('/categoria-insumos/consumo', { nomeCategoria: categoriaSelecionada, intervalo: periodo })
- 
-      requisicao
-        .then((resposta) => {
-          const dados = categoriaSelecionada === 'todas'
-            ? resposta.data
-            : [{ nomeCategoria: categoriaSelecionada, consumos: resposta.data }]
- 
-          setDadosGrafico(dados)
-        })
-        .catch((erro) => {
-          console.error('Erro ao buscar consumo:', erro)
-        })
-        .finally(() => {
-          setCarregando(false)
-        })
-    }
- 
-    const timeoutId = setTimeout(() => {
-      buscarDados()
-      const intervaloId = setInterval(buscarDados, 24 * 60 * 60 * 1000)
-      return () => clearInterval(intervaloId)
-    }, calcularMsAteSeteDaManha())
- 
-    return () => clearTimeout(timeoutId)
-  }, [categoriaSelecionada, periodo])
- 
-  function renderizarGrafico(dados) {
     chartRef.current?.destroy()
  
     const todasAsDatas = [...new Set(
@@ -163,7 +95,86 @@ export default function GraficoConsumo({ categorias = [] }) {
         },
       },
     })
-  }
+  }, [categoriaSelecionada])
+ 
+  useEffect(() => {
+    setCarregando(true)
+ 
+    const requisicao = categoriaSelecionada === 'todas'
+      ? api.post('/categoria-insumos/consumo/geral', { intervalo: periodo })
+      : api.post('/categoria-insumos/consumo', { nomeCategoria: categoriaSelecionada, intervalo: periodo })
+ 
+    requisicao
+      .then((resposta) => {
+        const dados = categoriaSelecionada === 'todas'
+          ? resposta.data
+          : [{ nomeCategoria: categoriaSelecionada, consumos: resposta.data }]
+ 
+        setDadosGrafico(dados)
+      })
+      .catch((erro) => {
+        console.error('Erro ao buscar consumo:', erro)
+        setDadosGrafico([])
+      })
+      .finally(() => {
+        setCarregando(false)
+      })
+  }, [categoriaSelecionada, periodo])
+ 
+  useEffect(() => {
+    if (!canvasRef.current) return
+    if (temDados(dadosGrafico)) {
+      renderizarGrafico(dadosGrafico)
+    } else {
+      chartRef.current?.destroy()
+    }
+  }, [dadosGrafico, renderizarGrafico])
+ 
+  // Atualiza automaticamente todo dia às 7h
+  useEffect(() => {
+    function calcularMsAteSeteDaManha() {
+      const agora = new Date()
+      const proximas7h = new Date()
+      proximas7h.setHours(7, 0, 0, 0)
+ 
+      if (agora >= proximas7h) {
+        proximas7h.setDate(proximas7h.getDate() + 1)
+      }
+ 
+      return proximas7h - agora
+    }
+ 
+    function buscarDados() {
+      setCarregando(true)
+ 
+      const requisicao = categoriaSelecionada === 'todas'
+        ? api.post('/categoria-insumos/consumo/geral', { intervalo: periodo })
+        : api.post('/categoria-insumos/consumo', { nomeCategoria: categoriaSelecionada, intervalo: periodo })
+ 
+      requisicao
+        .then((resposta) => {
+          const dados = categoriaSelecionada === 'todas'
+            ? resposta.data
+            : [{ nomeCategoria: categoriaSelecionada, consumos: resposta.data }]
+ 
+          setDadosGrafico(dados)
+        })
+        .catch((erro) => {
+          console.error('Erro ao buscar consumo:', erro)
+        })
+        .finally(() => {
+          setCarregando(false)
+        })
+    }
+ 
+    const timeoutId = setTimeout(() => {
+      buscarDados()
+      const intervaloId = setInterval(buscarDados, 24 * 60 * 60 * 1000)
+      return () => clearInterval(intervaloId)
+    }, calcularMsAteSeteDaManha())
+ 
+    return () => clearTimeout(timeoutId)
+  }, [categoriaSelecionada, periodo])
  
   return (
     <div className="grafico-consumo">
@@ -179,7 +190,7 @@ export default function GraficoConsumo({ categorias = [] }) {
             onChange={(e) => setCategoriaSelecionada(e.target.value)}
           >
             <option value="todas">Todas</option>
-            {categorias.map((cat) => (
+            {cats.map((cat) => (
               <option key={cat.id} value={cat.nome}>{cat.nome}</option>
             ))}
           </select>
@@ -199,7 +210,9 @@ export default function GraficoConsumo({ categorias = [] }) {
       <div className="grafico-area">
         {carregando
           ? <span className="grafico-carregando">Carregando...</span>
-          : <canvas ref={canvasRef} />
+          : temDados(dadosGrafico)
+            ? <canvas ref={canvasRef} />
+            : <span className="grafico-vazio">Sem dados de consumo para exibir</span>
         }
       </div>
     </div>

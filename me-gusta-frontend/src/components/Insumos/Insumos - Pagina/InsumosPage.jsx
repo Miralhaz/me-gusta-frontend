@@ -19,14 +19,20 @@ export default function InsumosPage() {
 
   function buscarCategorias() {
     api.get('/categoria-insumos')
-      .then((res) => setCategorias(res.data))
-      .catch((e) => console.error('Erro ao buscar categorias:', e))
+      .then((res) => setCategorias(Array.isArray(res.data) ? res.data : []))
+      .catch((e) => {
+        if (e.response?.status !== 204) console.error('Erro ao buscar categorias:', e)
+        setCategorias([])
+      })
   }
 
   function buscarInsumos() {
     api.get('/insumos')
-      .then((res) => setInsumos(res.data))
-      .catch((e) => console.error('Erro ao buscar insumos:', e))
+      .then((res) => setInsumos(Array.isArray(res.data) ? res.data : []))
+      .catch((e) => {
+        if (e.response?.status !== 204) console.error('Erro ao buscar insumos:', e)
+        setInsumos([])
+      })
   }
 
   useEffect(buscarCategorias, [])

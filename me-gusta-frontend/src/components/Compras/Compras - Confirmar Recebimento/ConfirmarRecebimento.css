@@ -1,0 +1,23 @@
+.confirmar-recebimento {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.confirmar-recebimento p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+.confirmar-recebimento-erro {
+  color: var(--vermelho-primario);
+  font-size: 0.85rem;
+}
+
+.confirmar-recebimento-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
