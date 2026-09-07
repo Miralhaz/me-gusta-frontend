@@ -12,6 +12,7 @@ import './InsumosPage.css'
 export default function InsumosPage() {
   const [categorias, setCategorias] = useState([])
   const [insumos, setInsumos] = useState([])
+  const [unidadeMedida, setUnidadeMedida] = useState([])
   const [categoriaAtiva, setCategoriaAtiva] = useState('todos')
   const [busca, setBusca] = useState('')
   const [modoVisualizacao, setModoVisualizacao] = useState('lista')
@@ -27,16 +28,26 @@ export default function InsumosPage() {
   }
 
   function buscarInsumos() {
-    api.get('/insumos')
-      .then((res) => setInsumos(Array.isArray(res.data) ? res.data : []))
+    api.get('/insumos/geral')
+      .then((res) => setInsumos(res.data))
       .catch((e) => {
         if (e.response?.status !== 204) console.error('Erro ao buscar insumos:', e)
         setInsumos([])
       })
   }
 
+  function buscarUnidadeMedida() {
+    api.get('/unidade-medidas')
+      .then((res) => setUnidadeMedida(res.data))
+      .catch((e) => {
+        if (e.response?.status !== 204) console.error('Erro ao buscar unidades de medida:', e)
+        setUnidadeMedida([])
+      })
+  }
+
   useEffect(buscarCategorias, [])
   useEffect(buscarInsumos, [])
+  useEffect(buscarUnidadeMedida, [])
 
   const insumosFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase()
@@ -64,7 +75,6 @@ export default function InsumosPage() {
           categorias={categorias}
           categoriaAtiva={categoriaAtiva}
           onSelecionarCategoria={setCategoriaAtiva}
-          onNovaCategoria={() => setModalAberto('categoria')}
         />
 
         <div className="insumos-conteudo">
@@ -75,6 +85,7 @@ export default function InsumosPage() {
             modoVisualizacao={modoVisualizacao}
             onModoVisualizacaoChange={setModoVisualizacao}
             onNovoInsumo={() => setModalAberto('insumo')}
+            onNovaCategoria={() => setModalAberto('categoria')}
             onConfigurarGiro={() => setModalAberto('giro')}
           />
           <Tabela insumos={insumosFiltrados} />
@@ -86,12 +97,9 @@ export default function InsumosPage() {
       </Modal>
 
       <Modal aberto={modalAberto === 'insumo'} onFechar={fecharModal} titulo="Cadastro de um novo insumo">
-        <CadastroInsumo categorias={categorias} onCadastrado={buscarInsumos} onFechar={fecharModal} />
+        <CadastroInsumo categorias={categorias} unidadeMedida={unidadeMedida} onCadastrado={buscarInsumos} onFechar={fecharModal} />
       </Modal>
-
-      <Modal aberto={modalAberto === 'giro'} onFechar={fecharModal} titulo="Configurar giro de estoque">
-        {/* ainda não tenho o print desse formulário}*/}
-      </Modal>
+      
     </>
   )
 }

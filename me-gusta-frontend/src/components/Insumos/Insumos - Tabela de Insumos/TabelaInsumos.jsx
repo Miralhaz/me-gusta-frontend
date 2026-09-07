@@ -1,4 +1,3 @@
-import StatusBadge from '../../Comum em páginas/Status/Status'
 import './TabelaInsumos.css'
 
 export default function TabelaInsumos({ insumos }) {
@@ -9,29 +8,33 @@ export default function TabelaInsumos({ insumos }) {
   }
 
   return (
-    <table className="insumos-tabela">
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Insumo</th>
-          <th>Categoria</th>
-          <th>Data de cadastro</th>
-          <th>Giro de Estoque (mês)</th>
-          <th>Status no Estoque</th>
-        </tr>
-      </thead>
-      <tbody>
-        {lista.map((insumo) => (
-          <tr key={insumo.codigoInsumo}>
-            <td>{insumo.codigoInsumo}</td>
-            <td>{insumo.nome}</td>
-            <td>{insumo.insumoCategoria.nome}</td>
-            <td>{insumo.dtCadastro}</td>
-            <td>{insumo.giroEstoque}</td>
-            <td><StatusBadge status={insumo.tipoStatus.nome} /></td>
+    <div className="insumo-tabela-wrapper">
+      <table className="insumos-tabela">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Insumo</th>
+            <th>Categoria</th>
+            <th>Data de cadastro</th>
+            <th>Giro de Estoque (mês)</th>
+            <th>Status</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {lista.map((insumo) => (
+            <tr key={insumo.codigoInsumo}>
+              <td>{insumo.codigoInsumo}</td>
+              <td>{insumo.nome}</td>
+              <td>{insumo.insumoCategoria.nome}</td>
+              <td>{insumo.dtCadastro}</td>
+              <td>{insumo.giroMensal}</td>
+              <td style={{ color: insumo.ativo ? 'green' : 'red', fontWeight: 'bold' }}>
+                {insumo.ativo ? 'ATIVO' : 'INATIVO'}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }

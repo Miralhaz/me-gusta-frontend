@@ -23,10 +23,6 @@ export default function Sidebar({ categorias, categoriaAtiva, onSelecionarCatego
           </li>
         ))}
       </ul>
-
-      <button className="insumos-sidebar-botao" onClick={onNovaCategoria}>
-        + Nova Categoria
-      </button>
     </aside>
   )
   

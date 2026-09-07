@@ -67,12 +67,13 @@ export default function FogazzasPage() {
             modoVisualizacao={modoVisualizacao}
             onModoVisualizacaoChange={setModoVisualizacao}
             onNovaFogazza={() => setModalAberto('fogazza')}
+            onNovaCategoriaFogazza={() => setModalAberto('categoria')}
           />
           <Tabela fogazzas={fogazzasFiltradas} />
         </div>
       </div>
 
-      <Modal aberto={modalAberto === 'categoria'} onFechar={fecharModal} titulo="Cadastro de uma nova categoria">
+      <Modal aberto={modalAberto === 'categoria'} onFechar={fecharModal} titulo="Cadastro de uma nova categoria de Fogazza">
         <CadastroCategoriaFogazza onCadastrado={buscarCategorias} onFechar={fecharModal} />
       </Modal>
 
