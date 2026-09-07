@@ -1,7 +1,6 @@
 import './Toolbar.css'
 
-export default function Toolbar({categoriaAtiva, busca, onBuscaChange, modoVisualizacao,
-  onModoVisualizacaoChange, onNovoInsumo, onNovaCategoria, onConfigurarGiro}) {
+export default function Toolbar({categoriaAtiva, busca, onBuscaChange, onNovoInsumo, onNovaCategoria, }) {
     
   return (
     <div className="insumos-toolbar">
@@ -16,9 +15,6 @@ export default function Toolbar({categoriaAtiva, busca, onBuscaChange, modoVisua
           </button>
           <button className="botao-outline" onClick={onNovaCategoria}>
             + Nova Categoria
-          </button>
-          <button className="botao-outline" onClick={onConfigurarGiro}>
-            Configurar Giro de Estoque
           </button>
         </div>
       </div>

@@ -27,7 +27,7 @@ export default function TabelaInsumos({ insumos }) {
               <td>{insumo.nome}</td>
               <td>{insumo.insumoCategoria.nome}</td>
               <td>{insumo.dtCadastro}</td>
-              <td>{insumo.giroEstoque}</td>
+              <td>{insumo.giroMensal}</td>
               <td style={{ color: insumo.ativo ? 'green' : 'red', fontWeight: 'bold' }}>
                 {insumo.ativo ? 'ATIVO' : 'INATIVO'}
               </td>

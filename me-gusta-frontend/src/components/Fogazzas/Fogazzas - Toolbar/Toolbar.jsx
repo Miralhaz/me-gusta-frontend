@@ -1,7 +1,7 @@
 import './Toolbar.css'
 
-export default function Toolbar({ categoriaAtiva, busca, onBuscaChange, modoVisualizacao,
-  onModoVisualizacaoChange, onNovaFogazza }) {
+export default function Toolbar({ categoriaAtiva, busca, onBuscaChange,
+ onNovaFogazza, onNovaCategoriaFogazza }) {
 
   return (
     <div className="fogazzas-toolbar">
@@ -11,6 +11,9 @@ export default function Toolbar({ categoriaAtiva, busca, onBuscaChange, modoVisu
         </span>
 
         <div className="fogazzas-toolbar-acoes">
+          <button className="botao-outline" onClick={onNovaCategoriaFogazza}>
+            + Nova Categoria
+          </button>
           <button className="botao-outline" onClick={onNovaFogazza}>
             + Nova Fogazza
           </button>
@@ -18,21 +21,6 @@ export default function Toolbar({ categoriaAtiva, busca, onBuscaChange, modoVisu
       </div>
 
       <div className="fogazzas-toolbar-baixo">
-        <div className="fogazzas-toggle-visualizacao">
-          <button
-            className={modoVisualizacao === 'lista' ? 'ativo' : ''}
-            onClick={() => onModoVisualizacaoChange('lista')}
-          >
-            ☰
-          </button>
-          <button
-            className={modoVisualizacao === 'grade' ? 'ativo' : ''}
-            onClick={() => onModoVisualizacaoChange('grade')}
-          >
-            ▦
-          </button>
-        </div>
-
         <input
           className="fogazzas-busca"
           type="text"

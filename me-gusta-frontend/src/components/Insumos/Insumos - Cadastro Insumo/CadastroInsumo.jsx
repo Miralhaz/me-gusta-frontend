@@ -68,7 +68,7 @@ export default function CadastroInsumo({ categorias, unidadeMedida, onCadastrado
       </label>
       <label>
         Ativo?
-        <input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} />
+        <input type="checkbox" className="form-cadastro__checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} />
       </label>
       <button type="submit" className="btn-primario form-cadastro__full" disabled={enviando}>
         {enviando ? 'Cadastrando...' : 'Cadastrar'}
