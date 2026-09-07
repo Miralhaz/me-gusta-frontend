@@ -1,8 +1,9 @@
 import './TabelaInsumos.css'
 
 export default function TabelaInsumos({ insumos }) {
-
-  if (insumos.length === 0) {
+  const lista = Array.isArray(insumos) ? insumos : []
+     
+  if (lista.length === 0) {
     return <p className="insumos-tabela-vazia">Nenhum insumo encontrado.</p>
   }
 
@@ -20,7 +21,7 @@ export default function TabelaInsumos({ insumos }) {
           </tr>
         </thead>
         <tbody>
-          {insumos.map((insumo) => (
+          {lista.map((insumo) => (
             <tr key={insumo.codigoInsumo}>
               <td>{insumo.codigoInsumo}</td>
               <td>{insumo.nome}</td>

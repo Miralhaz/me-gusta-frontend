@@ -13,7 +13,7 @@ export default function Sidebar({ categorias, categoriaAtiva, onSelecionarCatego
         >
           Todos
         </li>
-        {categorias.map((cat) => (
+        {(Array.isArray(categorias) ? categorias : []).map((cat) => (
           <li
             key={cat.id}
             className={categoriaAtiva === cat.nome ? 'ativo' : ''}

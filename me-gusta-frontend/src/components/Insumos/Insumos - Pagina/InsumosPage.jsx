@@ -20,20 +20,29 @@ export default function InsumosPage() {
 
   function buscarCategorias() {
     api.get('/categoria-insumos')
-      .then((res) => setCategorias(res.data))
-      .catch((e) => console.error('Erro ao buscar categorias:', e))
+      .then((res) => setCategorias(Array.isArray(res.data) ? res.data : []))
+      .catch((e) => {
+        if (e.response?.status !== 204) console.error('Erro ao buscar categorias:', e)
+        setCategorias([])
+      })
   }
 
   function buscarInsumos() {
     api.get('/insumos/geral')
       .then((res) => setInsumos(res.data))
-      .catch((e) => console.error('Erro ao buscar insumos:', e))
+      .catch((e) => {
+        if (e.response?.status !== 204) console.error('Erro ao buscar insumos:', e)
+        setInsumos([])
+      })
   }
 
   function buscarUnidadeMedida() {
     api.get('/unidade-medidas')
       .then((res) => setUnidadeMedida(res.data))
-      .catch((e) => console.error('Erro ao buscar unidades de medida:', e))
+      .catch((e) => {
+        if (e.response?.status !== 204) console.error('Erro ao buscar unidades de medida:', e)
+        setUnidadeMedida([])
+      })
   }
 
   useEffect(buscarCategorias, [])
@@ -90,10 +99,7 @@ export default function InsumosPage() {
       <Modal aberto={modalAberto === 'insumo'} onFechar={fecharModal} titulo="Cadastro de um novo insumo">
         <CadastroInsumo categorias={categorias} unidadeMedida={unidadeMedida} onCadastrado={buscarInsumos} onFechar={fecharModal} />
       </Modal>
-
-      <Modal aberto={modalAberto === 'giro'} onFechar={fecharModal} titulo="Configurar giro de estoque">
-        {/* ainda não tenho o print desse formulário}*/}
-      </Modal>
+      
     </>
   )
 }

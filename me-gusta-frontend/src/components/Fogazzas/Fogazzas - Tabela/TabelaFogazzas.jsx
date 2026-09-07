@@ -1,8 +1,9 @@
 import './TabelaFogazzas.css'
 
 export default function TabelaFogazzas({ fogazzas }) {
+  const lista = Array.isArray(fogazzas) ? fogazzas : []
 
-  if (fogazzas.length === 0) {
+  if (lista.length === 0) {
     return <p className="fogazzas-tabela-vazia">Nenhuma fogazza encontrada.</p>
   }
 
@@ -16,7 +17,7 @@ export default function TabelaFogazzas({ fogazzas }) {
         </tr>
       </thead>
       <tbody>
-        {fogazzas.map((fogazza) => (
+        {lista.map((fogazza) => (
           <tr key={fogazza.id}>
             <td>{fogazza.nome}</td>
             <td>{fogazza.categoriaFogazza?.nome}</td>
