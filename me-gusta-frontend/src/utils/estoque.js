@@ -57,3 +57,8 @@ export function statusPorValidade(dtValidade) {
   if (nivel === 'atencao') return 'ATENÇÃO'
   return 'OK'
 }
+
+export function formatarMoeda(valor) {
+  if (valor === null || valor === undefined || Number.isNaN(valor)) return '—'
+  return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}

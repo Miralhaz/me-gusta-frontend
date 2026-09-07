@@ -8,6 +8,7 @@ import VendasPage from './components/Vendas/Vendas - Pagina/VendasPage.jsx'
 import RelatoriosPage from './components/Relatorios/Relatorios - Pagina/RelatoriosPage.jsx'
 import EstoquePage from './components/Estoque/Estoque - Pagina/EstoquePage.jsx'
 import FogazzasPage from './components/Fogazzas/Fogazzas - Pagina/FogazzasPage.jsx'
+import ComprasPage from './components/Compras/Compras - Pagina/ComprasPage.jsx'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/vendas" element={<VendasPage />} />
         <Route path="/relatorios" element={<RelatoriosPage />} />
         <Route path="/estoque" element={<EstoquePage />} />
+        <Route path="/compras" element={<ComprasPage />} />
         <Route path="*" element={<Navigate to="/cadastro" replace />} />
         <Route path="/fogazzas" element={<FogazzasPage />} />
       </Routes>

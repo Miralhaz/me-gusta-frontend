@@ -13,10 +13,13 @@ export default function DashboardPage() {
   useEffect(() => {
     api.get('/categoria-insumos')
       .then((res) => {
-        setCategorias(res.data)
+        setCategorias(Array.isArray(res.data) ? res.data : [])
       })
       .catch((e) => {
-        console.error('Erro ao buscar categorias:', e)
+        if (e.response?.status !== 204) {
+          console.error('Erro ao buscar categorias:', e)
+        }
+        setCategorias([])
       })
   }, [])
 
