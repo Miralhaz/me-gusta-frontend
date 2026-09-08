@@ -8,12 +8,15 @@
   flex-direction: column;
   gap: 14px;
   min-width: 0;
+  height: 45vh;
 }
 
 .grafico-cabecalho {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .grafico-titulo {
@@ -25,8 +28,9 @@
 
 .grafico-filtro {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .select-filtro {
@@ -48,6 +52,61 @@
 .select-filtro:focus {
   outline: 2px solid rgba(214, 40, 40, 0.15);
   border-color: var(--vermelho-primario);
+}
+
+.filtro-datas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filtro-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #666;
+  font-weight: 500;
+}
+
+.input-data {
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid #c2c2c2;
+  border-radius: 7px;
+  background: var(--branco-primario);
+  color: var(--texto-titulo);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+}
+
+.input-data:focus {
+  outline: 2px solid rgba(214, 40, 40, 0.15);
+  border-color: var(--vermelho-primario);
+}
+
+.btn-aplicar-filtro {
+  height: 28px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 7px;
+  background: var(--vermelho-primario);
+  color: var(--branco-primario);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.12s ease, opacity 0.12s ease;
+  margin-top: 4px;
+}
+
+.btn-aplicar-filtro:hover:not(:disabled) {
+  background: #b81e1e;
+}
+
+.btn-aplicar-filtro:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .grafico-area {
