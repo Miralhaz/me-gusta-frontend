@@ -1,14 +1,16 @@
 .compras-pagina {
-  min-height: calc(100vh - 100px);
+  height: calc(100vh - 56px);
   background: var(--branco-primario);
   padding: 24px;
   display: flex;
-  flex-direction: row;
-  gap: 20px;
+  flex-direction: column;
 }
 
 .compras-conteudo {
-  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   border: 1px solid #e0e0e0b1;
   border-radius: 8px;
   padding: 20px 24px;

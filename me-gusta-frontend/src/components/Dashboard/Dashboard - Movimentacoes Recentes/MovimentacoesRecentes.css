@@ -3,12 +3,13 @@
   flex-shrink: 0;
   border: 1px solid #c2c2c2;
   border-radius: 10px;
-  padding: 18px 16px;
+  padding: 14px 16px;
   background: rgba(224, 224, 224, 0.4);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  height: 45vh;
+  gap: 8px;
+  height: 100%;
+  min-height: 0;
 }
 
 .movimentacoes-cabecalho {
@@ -16,6 +17,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .movimentacoes-titulo-container {
@@ -40,19 +42,27 @@
 .movimentacoes-filtros {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .labels-datas {
   display: flex;
   flex-direction: row;
-  gap: 60px;
+  gap: 44px;
 }
 
 .filtro-datas {
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
   gap: 4px;
+}
+
+.filtro-datas .input-data {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 4px;
 }
 
 .filtro-label {
@@ -65,13 +75,13 @@
 }
 
 .input-data {
-  height: 28px;
+  height: 26px;
   padding: 0 8px;
   border: 1px solid #c2c2c2;
   border-radius: 7px;
   background: var(--branco-primario);
   color: var(--texto-titulo);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   transition: border-color 0.12s ease;
 }
@@ -82,7 +92,7 @@
 }
 
 .btn-aplicar-filtro {
-  height: 28px;
+  height: 26px;
   padding: 0 16px;
   border: none;
   border-radius: 7px;
@@ -92,7 +102,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.12s ease, opacity 0.12s ease;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .btn-aplicar-filtro:hover:not(:disabled) {
@@ -108,11 +118,13 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .select-filtro-mov {
-  height: 28px;
-  padding: 0 24px 0 10px;
+  height: 26px;
+  padding: 0 22px 0 8px;
+  width: 88px;
   border: 1px solid #c2c2c2;
   border-radius: 7px;
   background: var(--branco-primario);
@@ -136,6 +148,7 @@
   color: var(--vermelho-primario);
   text-align: center;
   padding: 4px;
+  flex-shrink: 0;
 }
 
 .movimentacoes-carregando,
@@ -150,8 +163,10 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 65vh;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  padding-bottom: 10px;
   scrollbar-width: thin;
   scrollbar-color: #c2c2c2 transparent;
 }

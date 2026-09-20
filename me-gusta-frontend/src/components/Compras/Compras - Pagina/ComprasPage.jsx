@@ -29,13 +29,22 @@ function extrairLista(res) {
   return Array.isArray(res.data) ? res.data : []
 }
 
+function getHoje() {
+  return new Date().toISOString().split('T')[0]
+}
+
+function getDataInicialPadrao() {
+  return '2022-01-01'
+}
+
 export default function ComprasPage() {
   const navigate = useNavigate()
   const [compras, setCompras] = useState([])
   const [referencias, setReferencias] = useState(REFERENCIAS_VAZIAS)
 
-  const [filtroData, setFiltroData] = useState('todos')
-  const [filtroStatus, setFiltroStatus] = useState('todos')
+  const [filtroDataInicio, setFiltroDataInicio] = useState(getDataInicialPadrao())
+  const [filtroDataFim, setFiltroDataFim] = useState(getHoje())
+  const [busca, setBusca] = useState('')
   const [modalAberto, setModalAberto] = useState(null)
   const [compraSelecionada, setCompraSelecionada] = useState(null)
   const [mostrarConfirmacaoNovaCompra, setMostrarConfirmacaoNovaCompra] = useState(false)
@@ -68,12 +77,12 @@ export default function ComprasPage() {
   const comprasFiltradas = useMemo(() => {
     if (!Array.isArray(compras)) return []
     return compras.filter((c) => {
-      const statusNome = c.tipoStatus?.nome ?? ''
-      const bateStatus = filtroStatus === 'todos' || statusNome === filtroStatus
-      const bateData = filtroData === 'todos' || dentroDoPeriodo(c.dtPedido, filtroData)
-      return bateStatus && bateData
+      const bateBusca = !busca || (c.insumo?.nome ?? '').toLowerCase().includes(busca.toLowerCase()) ||
+        (c.fornecedor?.nome ?? '').toLowerCase().includes(busca.toLowerCase())
+      const bateData = dentroDoPeriodo(c.dtPedido, filtroDataInicio, filtroDataFim)
+      return bateBusca && bateData
     })
-  }, [compras, filtroData, filtroStatus])
+  }, [compras, filtroDataInicio, filtroDataFim, busca])
 
   function abrirConfirmacao(compra) {
     setCompraSelecionada(compra)
@@ -97,10 +106,12 @@ export default function ComprasPage() {
       <div className="compras-pagina">
         <div className="compras-conteudo">
           <Toolbar
-            filtroData={filtroData}
-            onFiltroDataChange={setFiltroData}
-            filtroStatus={filtroStatus}
-            onFiltroStatusChange={setFiltroStatus}
+            filtroDataInicio={filtroDataInicio}
+            onFiltroDataInicioChange={setFiltroDataInicio}
+            filtroDataFim={filtroDataFim}
+            onFiltroDataFimChange={setFiltroDataFim}
+            busca={busca}
+            onBuscaChange={setBusca}
             onNovaCompra={() => setMostrarConfirmacaoNovaCompra(true)}
             onNovoFornecedor={() => setModalAberto('fornecedor')}
           />
@@ -138,18 +149,14 @@ function paraDiaUTC(data) {
   return Date.UTC(data.getUTCFullYear(), data.getUTCMonth(), data.getUTCDate())
 }
 
-function dentroDoPeriodo(dataCompraISO, filtro) {
+function dentroDoPeriodo(dataCompraISO, inicio, fim) {
   if (!dataCompraISO) return false
 
   const dataCompra = new Date(dataCompraISO)
-  const hoje = new Date()
-
   const diaCompraUTC = paraDiaUTC(dataCompra)
-  const diaHojeUTC = Date.UTC(hoje.getFullYear(), hoje.getMonth(), hoje.getDate())
-  const diffDias = (diaHojeUTC - diaCompraUTC) / (1000 * 60 * 60 * 24)
 
-  if (filtro === '7dias') return diffDias >= 0 && diffDias <= 7
-  if (filtro === '30dias') return diffDias >= 0 && diffDias <= 30
-  if (filtro === 'mes') return dataCompra.getUTCMonth() === hoje.getMonth() && dataCompra.getUTCFullYear() === hoje.getUTCFullYear()
-  return true
+  const diaInicioUTC = paraDiaUTC(new Date(inicio))
+  const diaFimUTC = paraDiaUTC(new Date(fim))
+
+  return diaCompraUTC >= diaInicioUTC && diaCompraUTC <= diaFimUTC
 }

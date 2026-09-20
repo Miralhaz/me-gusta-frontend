@@ -1,5 +1,6 @@
 .compras-tabela-wrapper {
-  max-height: 80vh;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   border-radius: 6px;
   scrollbar-width: none;
