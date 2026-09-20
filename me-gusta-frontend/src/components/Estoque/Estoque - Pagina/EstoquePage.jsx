@@ -30,6 +30,8 @@ const REFERENCIAS_VAZIAS = {
   motivos: [],
 }
 
+const TAMANHO_PAGINA = 10
+
 function contarLotesPorInsumo(entradas) {
   const mapa = new Map()
   for (const entrada of entradas) {
@@ -60,10 +62,14 @@ export default function EstoquePage() {
   const abrirEntradaInicial = searchParams.get('abrirEntrada') === 'true'
 
   const [referencias, setReferencias] = useState(REFERENCIAS_VAZIAS)
-  const [todosItens, setTodosItens] = useState([])
+  const [itensPagina, setItensPagina] = useState([])
+  const [todosItens, setTodosItens] = useState([]) // usado só nos selects dos modais de entrada/saída
+  const [pagina, setPagina] = useState(0)
+  const [totalPaginas, setTotalPaginas] = useState(0)
   const [lotesPorInsumo, setLotesPorInsumo] = useState(new Map())
   const [categoriaAtiva, setCategoriaAtiva] = useState('todos')
   const [busca, setBusca] = useState('')
+  const [buscaAplicada, setBuscaAplicada] = useState('')
   const [modalAberto, setModalAberto] = useState(abrirEntradaInicial ? 'entrada' : null)
   const [itemSelecionado, setItemSelecionado] = useState(null)
 
@@ -76,9 +82,22 @@ export default function EstoquePage() {
   }, [])
 
   const buscarEstoque = useCallback(() => {
+    const params = { page: pagina, size: TAMANHO_PAGINA }
+    if (categoriaAtiva !== 'todos') params.categoria = categoriaAtiva
+    if (buscaAplicada) params.busca = buscaAplicada
+
+    api.get('/insumos/estoque', { params })
+      .then((res) => {
+        setItensPagina(res.data.content.map(mapInsumoParaItem))
+        setTotalPaginas(res.data.page.totalPages)
+      })
+      .catch((e) => console.error('Erro ao buscar estoque:', e))
+  }, [pagina, categoriaAtiva, buscaAplicada])
+
+  const buscarTodosInsumos = useCallback(() => {
     api.get('/insumos')
       .then((res) => setTodosItens(extrairLista(res).map(mapInsumoParaItem)))
-      .catch((e) => console.error('Erro ao buscar estoque:', e))
+      .catch((e) => console.error('Erro ao buscar insumos:', e))
   }, [])
 
   const buscarLotes = useCallback(() => {
@@ -93,18 +112,27 @@ export default function EstoquePage() {
   }, [buscarEstoque, buscarLotes])
 
   useEffect(() => { buscarReferencias() }, [buscarReferencias])
-  useEffect(() => { atualizarEstoque() }, [atualizarEstoque])
+  useEffect(() => { buscarEstoque() }, [buscarEstoque])
+  useEffect(() => { buscarLotes() }, [buscarLotes])
 
-  const itens = useMemo(() => {
-    const termo = busca.trim().toLowerCase()
-    return todosItens
-      .filter((item) => {
-        const bateCategoria = categoriaAtiva === 'todos' || item.categoria === categoriaAtiva
-        const bateBusca = item.produto.toLowerCase().includes(termo)
-        return bateCategoria && bateBusca
-      })
-      .map((item) => ({ ...item, qtdLotes: lotesPorInsumo.get(item.id) ?? 0 }))
-  }, [todosItens, lotesPorInsumo, categoriaAtiva, busca])
+  // Os selects dos modais precisam de todos os insumos, então só carregamos quando um modal abre
+  useEffect(() => {
+    if (modalAberto === 'entrada' || modalAberto === 'saida') buscarTodosInsumos()
+  }, [modalAberto, buscarTodosInsumos])
+
+  // Espera o usuário parar de digitar antes de buscar no back-end
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setBuscaAplicada(busca.trim())
+      setPagina(0)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [busca])
+
+  const itens = useMemo(
+    () => itensPagina.map((item) => ({ ...item, qtdLotes: lotesPorInsumo.get(item.id) ?? 0 })),
+    [itensPagina, lotesPorInsumo]
+  )
 
   const fecharModal = useCallback(() => {
     setModalAberto(null)
@@ -129,13 +157,37 @@ export default function EstoquePage() {
           <ToolbarEstoque
             categorias={referencias.categorias}
             categoriaAtiva={categoriaAtiva}
-            onCategoriaChange={setCategoriaAtiva}
+            onCategoriaChange={(categoria) => {
+              setCategoriaAtiva(categoria)
+              setPagina(0)
+            }}
             busca={busca}
             onBuscaChange={setBusca}
             onNovaSaida={() => setModalAberto('saida')}
             onNovaEntrada={() => setModalAberto('entrada')}
           />
           <TabelaEstoque itens={itens} onEditar={abrirEdicao} onVerLotes={abrirLotes} />
+          {totalPaginas > 1 && (
+            <div className="estoque-paginacao">
+              <button
+                type="button"
+                className="botao-outline"
+                disabled={pagina === 0}
+                onClick={() => setPagina((p) => p - 1)}
+              >
+                Anterior
+              </button>
+              <span>Página {pagina + 1} de {totalPaginas}</span>
+              <button
+                type="button"
+                className="botao-outline"
+                disabled={pagina + 1 >= totalPaginas}
+                onClick={() => setPagina((p) => p + 1)}
+              >
+                Próxima
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
