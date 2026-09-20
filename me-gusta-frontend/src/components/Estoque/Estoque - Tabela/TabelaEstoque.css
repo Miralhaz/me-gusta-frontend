@@ -1,22 +1,25 @@
 
 .estoque-tabela-wrapper {
-  max-height: 80vh;
-  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  container-type: size; /* permite usar cqh (1% da altura deste wrapper) nas linhas */
   border-radius: 6px;
-  scrollbar-width: none;
 }
 
 .estoque-tabela {
+  /* 10 linhas + cabeçalho = 11 partes iguais da altura disponível (mín. 24px, máx. 54px).
+     O -10px desconta as bordas de 1px entre as linhas. */
+  --altura-linha: clamp(24px, calc((100cqh - 10px) / 11), 54px);
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  line-height: 1.2;
 }
 
 .estoque-tabela thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding: 10px 8px;
+  height: var(--altura-linha);
+  padding: 0 8px;
   font-weight: 700;
   color: #222;
   background: #f4f4f4;
@@ -25,7 +28,8 @@
 }
 
 .estoque-tabela tbody td {
-  padding: 12px 8px;
+  height: var(--altura-linha);
+  padding: 0 8px;
   border-bottom: 1px solid #eee;
   color: #333;
 }
@@ -48,8 +52,8 @@
   border: 1px solid #333;
   border-radius: 6px;
   background: #fff;
-  width: 30px;
-  height: 30px;
+  width: clamp(20px, calc(var(--altura-linha) - 8px), 30px);
+  height: clamp(20px, calc(var(--altura-linha) - 8px), 30px);
   cursor: pointer;
   font-size: 0.9rem;
   color: #444;
@@ -82,7 +86,7 @@
   border: 1px solid #ccc;
   border-radius: 12px;
   background: #fafafa;
-  padding: 3px 10px;
+  padding: 2px 10px;
   font-size: 0.78rem;
   font-weight: 600;
   color: #555;
