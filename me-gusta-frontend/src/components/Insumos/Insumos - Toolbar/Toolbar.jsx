@@ -1,7 +1,13 @@
+import { memo } from 'react'
 import './Toolbar.css'
 
-export default function Toolbar({categoriaAtiva, busca, onBuscaChange, onNovoInsumo, onNovaCategoria, }) {
-    
+function Toolbar({
+  categoriaAtiva,
+  busca,
+  onBuscaChange,
+  onNovoInsumo,
+  onNovaCategoria
+}) {
   return (
     <div className="insumos-toolbar">
       <div className="insumos-toolbar-topo">
@@ -19,16 +25,15 @@ export default function Toolbar({categoriaAtiva, busca, onBuscaChange, onNovoIns
         </div>
       </div>
 
-      <div className="insumos-toolbar-baixo">
-
-        <input
-          className="insumos-busca"
-          type="text"
-          placeholder="Ex: Presunto / #PO-002"
-          value={busca}
-          onChange={(e) => onBuscaChange(e.target.value)}
-        />
-      </div>
+      <input
+        className="insumos-busca"
+        type="text"
+        placeholder="Buscar insumo..."
+        value={busca}
+        onChange={(e) => onBuscaChange(e.target.value)}
+      />
     </div>
   )
 }
+
+export default memo(Toolbar)
