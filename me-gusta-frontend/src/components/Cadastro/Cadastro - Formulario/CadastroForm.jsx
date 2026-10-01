@@ -14,7 +14,7 @@ export default function CadastroForm({ form, onChange, onSubmit, requisitosSenha
             </div>
 
             <div className="campos">
-                <label> Telefone: </label>
+                <label> Telefone (celular): </label>
                 <input name="telefone" type="tel" inputMode="numeric" maxLength={15} autoComplete="tel" placeholder="(11) 99999-9999" value={form.telefone} onChange={onChange} />
             </div>
 
