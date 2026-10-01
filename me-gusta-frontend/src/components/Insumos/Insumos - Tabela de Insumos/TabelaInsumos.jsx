@@ -1,8 +1,9 @@
+import { memo } from 'react'
 import './TabelaInsumos.css'
 
-export default function TabelaInsumos({ insumos }) {
+function TabelaInsumos({ insumos }) {
   const lista = Array.isArray(insumos) ? insumos : []
-     
+
   if (lista.length === 0) {
     return <p className="insumos-tabela-vazia">Nenhum insumo encontrado.</p>
   }
@@ -25,9 +26,9 @@ export default function TabelaInsumos({ insumos }) {
             <tr key={insumo.codigoInsumo}>
               <td>{insumo.codigoInsumo}</td>
               <td>{insumo.nome}</td>
-              <td>{insumo.insumoCategoria.nome}</td>
+              <td>{insumo.insumoCategoria?.nome ?? ''}</td>
               <td>{insumo.dtCadastro}</td>
-              <td>{insumo.giroMensal.toFixed(2)}</td>
+              <td>{insumo.giroMensal?.toFixed(2) ?? '0.00'}</td>
               <td style={{ color: insumo.ativo ? 'green' : 'red', fontWeight: 'bold' }}>
                 {insumo.ativo ? 'ATIVO' : 'INATIVO'}
               </td>
@@ -38,3 +39,5 @@ export default function TabelaInsumos({ insumos }) {
     </div>
   )
 }
+
+export default memo(TabelaInsumos)

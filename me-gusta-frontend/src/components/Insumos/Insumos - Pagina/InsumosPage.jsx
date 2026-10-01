@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
-import api from '../../../provider/api'
+import { useState } from 'react'
 import Navbar from '../../Comum em páginas/Navbar/Navbar'
 import Modal from '../../Comum em páginas/Modal/Modal'
 import Sidebar from '../Insumos - Sidebar/Sidebar'
@@ -7,63 +6,12 @@ import Toolbar from '../Insumos - Toolbar/Toolbar'
 import Tabela from '../Insumos - Tabela de Insumos/TabelaInsumos'
 import CadastroCategoria from '../Insumos - Cadastro Categoria/CadastroCategoria'
 import CadastroInsumo from '../Insumos - Cadastro Insumo/CadastroInsumo'
+import { useInsumos } from '../../../hooks/useInsumos'
 import './InsumosPage.css'
 
 export default function InsumosPage() {
-  const [categorias, setCategorias] = useState([])
-  const [insumos, setInsumos] = useState([])
-  const [unidadeMedida, setUnidadeMedida] = useState([])
-  const [categoriaAtiva, setCategoriaAtiva] = useState('todos')
-  const [busca, setBusca] = useState('')
-  const [modoVisualizacao, setModoVisualizacao] = useState('lista')
-  const [modalAberto, setModalAberto] = useState(null) 
-
-  function buscarCategorias() {
-    api.get('/categoria-insumos')
-      .then((res) => setCategorias(Array.isArray(res.data) ? res.data : []))
-      .catch((e) => {
-        if (e.response?.status !== 204) console.error('Erro ao buscar categorias:', e)
-        setCategorias([])
-      })
-  }
-
-  function buscarInsumos() {
-    api.get('/insumos/geral')
-      .then((res) => setInsumos(res.data))
-      .catch((e) => {
-        if (e.response?.status !== 204) console.error('Erro ao buscar insumos:', e)
-        setInsumos([])
-      })
-  }
-
-  function buscarUnidadeMedida() {
-    api.get('/unidade-medidas')
-      .then((res) => setUnidadeMedida(res.data))
-      .catch((e) => {
-        if (e.response?.status !== 204) console.error('Erro ao buscar unidades de medida:', e)
-        setUnidadeMedida([])
-      })
-  }
-
-  useEffect(buscarCategorias, [])
-  useEffect(buscarInsumos, [])
-  useEffect(buscarUnidadeMedida, [])
-
-  const insumosFiltrados = useMemo(() => {
-    const termo = busca.trim().toLowerCase()
-    return insumos.filter((insumo) => {
-      const bateCategoria =
-        categoriaAtiva === 'todos' ||
-        insumo.insumoCategoria?.nome === categoriaAtiva
-
-      const bateBusca =
-        termo === '' ||
-        insumo.nome.toLowerCase().includes(termo) ||
-        insumo.codigoInsumo.toLowerCase().includes(termo)
-
-      return bateCategoria && bateBusca
-    })
-  }, [insumos, categoriaAtiva, busca])
+  const { state, actions } = useInsumos()
+  const [modalAberto, setModalAberto] = useState(null)
 
   const fecharModal = () => setModalAberto(null)
 
@@ -72,34 +20,53 @@ export default function InsumosPage() {
       <Navbar />
       <div className="insumos-pagina">
         <Sidebar
-          categorias={categorias}
-          categoriaAtiva={categoriaAtiva}
-          onSelecionarCategoria={setCategoriaAtiva}
+          categorias={state.categorias}
+          categoriaAtiva={state.categoriaAtiva}
+          onSelecionarCategoria={actions.setCategoriaAtiva}
         />
 
         <div className="insumos-conteudo">
           <Toolbar
-            categoriaAtiva={categoriaAtiva}
-            busca={busca}
-            onBuscaChange={setBusca}
-            modoVisualizacao={modoVisualizacao}
-            onModoVisualizacaoChange={setModoVisualizacao}
+            categoriaAtiva={state.categoriaAtiva}
+            busca={state.busca}
+            onBuscaChange={actions.setBusca}
             onNovoInsumo={() => setModalAberto('insumo')}
             onNovaCategoria={() => setModalAberto('categoria')}
-            onConfigurarGiro={() => setModalAberto('giro')}
           />
-          <Tabela insumos={insumosFiltrados} />
+          <Tabela insumos={state.insumos} />
+
+          {state.totalPaginas > 1 && (
+            <div className="insumos-paginacao">
+              <button
+                type="button"
+                className="botao-outline"
+                disabled={state.pagina === 0}
+                onClick={() => actions.setPagina((p) => p - 1)}
+              >
+                Anterior
+              </button>
+              <span>Página {state.pagina + 1} de {state.totalPaginas}</span>
+              <button
+                type="button"
+                className="botao-outline"
+                disabled={state.pagina + 1 >= state.totalPaginas}
+                onClick={() => actions.setPagina((p) => p + 1)}
+              >
+                Próxima
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
       <Modal aberto={modalAberto === 'categoria'} onFechar={fecharModal} titulo="Cadastro de uma nova categoria">
-        <CadastroCategoria onCadastrado={buscarCategorias} onFechar={fecharModal} />
+        <CadastroCategoria onCadastrado={actions.cadastrarCategoria} onFechar={fecharModal} />
       </Modal>
 
       <Modal aberto={modalAberto === 'insumo'} onFechar={fecharModal} titulo="Cadastro de um novo insumo">
-        <CadastroInsumo categorias={categorias} unidadeMedida={unidadeMedida} onCadastrado={buscarInsumos} onFechar={fecharModal} />
+        <CadastroInsumo categorias={state.categorias} unidadeMedida={state.unidadeMedida} onCadastrado={actions.cadastrarInsumo} onFechar={fecharModal} />
       </Modal>
-      
+
     </>
   )
 }
