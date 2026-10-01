@@ -58,12 +58,13 @@ function mapInsumoParaItem(insumo) {
 }
 
 export default function EstoquePage() {
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const abrirEntradaInicial = searchParams.get('abrirEntrada') === 'true'
+  const insumoIdFromUrl = searchParams.get('insumoId')
 
   const [referencias, setReferencias] = useState(REFERENCIAS_VAZIAS)
   const [itensPagina, setItensPagina] = useState([])
-  const [todosItens, setTodosItens] = useState([]) // usado só nos selects dos modais de entrada/saída
+  const [todosItens, setTodosItens] = useState([])
   const [pagina, setPagina] = useState(0)
   const [totalPaginas, setTotalPaginas] = useState(0)
   const [lotesPorInsumo, setLotesPorInsumo] = useState(new Map())
@@ -128,6 +129,42 @@ export default function EstoquePage() {
     }, 300)
     return () => clearTimeout(timer)
   }, [busca])
+
+  // Abre o modal de lotes do insumo específico vindo da URL (ex: Dashboard alerta vencido)
+  useEffect(() => {
+    if (!insumoIdFromUrl) return
+    let ativo = true
+    const insumoId = parseInt(insumoIdFromUrl, 10)
+
+    const tentarAbrir = (lista) => {
+      const itemEncontrado = lista.find((item) => item.id === insumoId)
+      if (itemEncontrado && ativo) {
+        setItemSelecionado(itemEncontrado)
+        setModalAberto('lotes')
+        setSearchParams({}, { replace: true })
+      }
+    }
+
+    // Primeiro tenta na lista paginada
+    tentarAbrir(itensPagina)
+
+    // Se não achou, tenta na lista completa
+    if (!itemSelecionado && todosItens.length > 0) {
+      tentarAbrir(todosItens)
+    } else if (!itemSelecionado && todosItens.length === 0) {
+      // Se não temos os insumos carregados, busca todos
+      api.get('/insumos')
+        .then((res) => {
+          if (!ativo) return
+          const todos = extrairLista(res).map(mapInsumoParaItem)
+          setTodosItens(todos)
+          tentarAbrir(todos)
+        })
+        .catch((e) => console.error('Erro ao buscar insumo para lote:', e))
+    }
+
+    return () => { ativo = false }
+  }, [insumoIdFromUrl, itensPagina, todosItens, setSearchParams, itemSelecionado])
 
   const itens = useMemo(
     () => itensPagina.map((item) => ({ ...item, qtdLotes: lotesPorInsumo.get(item.id) ?? 0 })),

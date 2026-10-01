@@ -62,3 +62,56 @@ export function formatarMoeda(valor) {
   if (valor === null || valor === undefined || Number.isNaN(valor)) return '—'
   return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
+
+const FRACOES_COMUNS = [
+  { valor: 1/8, label: '1/8' },
+  { valor: 1/6, label: '1/6' },
+  { valor: 1/5, label: '1/5' },
+  { valor: 1/4, label: '1/4' },
+  { valor: 1/3, label: '1/3' },
+  { valor: 3/8, label: '3/8' },
+  { valor: 2/5, label: '2/5' },
+  { valor: 1/2, label: '1/2' },
+  { valor: 3/5, label: '3/5' },
+  { valor: 5/8, label: '5/8' },
+  { valor: 2/3, label: '2/3' },
+  { valor: 3/4, label: '3/4' },
+  { valor: 4/5, label: '4/5' },
+  { valor: 5/6, label: '5/6' },
+  { valor: 7/8, label: '7/8' },
+]
+
+export function decimalParaFracao(valor) {
+  const num = Number(valor)
+  if (!isFinite(num)) return null
+  const parteInteira = Math.floor(num)
+  const parteDecimal = num - parteInteira
+  if (parteDecimal === 0) return null
+  let melhor = null
+  let menorDiff = Infinity
+  for (const f of FRACOES_COMUNS) {
+    const diff = Math.abs(parteDecimal - f.valor)
+    if (diff < menorDiff) {
+      menorDiff = diff
+      melhor = f
+    }
+  }
+  if (!melhor || menorDiff > 0.04) return null
+  if (parteInteira > 0) {
+    return `${parteInteira} e ${melhor.label}`
+  }
+  return melhor.label
+}
+
+export function formatarConsumoLegivel(valor, unidade) {
+  const num = Number(valor)
+  if (!isFinite(num)) return '—'
+  if (num >= 1) {
+    return `${num.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} ${unidade}/dia`
+  }
+  const fracao = decimalParaFracao(num)
+  if (fracao) {
+    return `${fracao} de ${unidade}/dia`
+  }
+  return `${num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${unidade}/dia`
+}

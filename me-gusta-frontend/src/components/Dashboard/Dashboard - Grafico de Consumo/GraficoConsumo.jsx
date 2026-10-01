@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Chart, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js'
 import annotationPlugin from 'chartjs-plugin-annotation'
 import api from '../../../provider/api'
+import { formatarNumero, formatarConsumoLegivel } from '../../../utils/estoque'
 import './GraficoConsumo.css'
 
 Chart.register(BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend, annotationPlugin)
@@ -134,11 +135,6 @@ export default function GraficoConsumo() {
     }
   }, [])
 
-  const formatarNumero = (num) => {
-    if (num === undefined || num === null) return '0'
-    return Number(num).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  }
-
   const formatarInteiro = (num) => {
     if (num === undefined || num === null) return '0'
     const n = Number(num)
@@ -185,20 +181,20 @@ export default function GraficoConsumo() {
     const nome = item.nomeInsumo
     const dias = item.diasDeCobertura
     const qtdAtual = formatarInteiro(item.quantidadeAtual)
-    const consumoMedio = formatarInteiro(item.consumoMedioDiario)
+    const consumoMedioLegivel = formatarConsumoLegivel(item.consumoMedioDiario, item.unidadeMedida)
     const unidade = item.unidadeMedida
 
     if (normalizado === 'CRITICO') {
-      return `AÇÃO IMEDIATA NECESSÁRIA: O insumo "${nome}" tem apenas ${dias} dia(s) de cobertura (${qtdAtual} ${unidade} em estoque). O consumo médio é de ${consumoMedio} ${unidade}/dia. Faça o pedido de reposição AGORA para evitar ruptura total. Considere solicitar compra emergencial ou transferência de outra unidade.`
+      return `AÇÃO IMEDIATA NECESSÁRIA: O insumo "${nome}" tem apenas ${dias} dia(s) de cobertura (${qtdAtual} ${unidade} em estoque). O consumo médio é de ${consumoMedioLegivel}. Faça o pedido de reposição AGORA para evitar ruptura total. Considere solicitar compra emergencial ou transferência de outra unidade.`
     }
     if (normalizado === 'ATENCAO') {
-      return `Fique atento à quantidade de "${nome}" no estoque. Com ${dias} dias de cobertura (${qtdAtual} ${unidade} disponíveis) e consumo médio de ${consumoMedio} ${unidade}/dia, o insumo está próximo de atingir nível crítico. Programe a reposição nos próximos dias para evitar urgência.`
+      return `Fique atento à quantidade de "${nome}" no estoque. Com ${dias} dias de cobertura (${qtdAtual} ${unidade} disponíveis) e consumo médio de ${consumoMedioLegivel}, o insumo está próximo de atingir nível crítico. Programe a reposição nos próximos dias para evitar urgência.`
     }
     if (normalizado === 'ALERTA') {
-      return `O insumo "${nome}" tem ${dias} dias de cobertura (${qtdAtual} ${unidade}). O consumo está estável em ${consumoMedio} ${unidade}/dia. Monitore a evolução e prepare o pedido de reposição para a próxima semana.`
+      return `O insumo "${nome}" tem ${dias} dias de cobertura (${qtdAtual} ${unidade}). O consumo está estável em ${consumoMedioLegivel}. Monitore a evolução e prepare o pedido de reposição para a próxima semana.`
     }
     if (normalizado === 'OK') {
-      return `O insumo "${nome}" está com estoque adequado (${dias} dias de cobertura, ${qtdAtual} ${unidade}). Consumo médio de ${consumoMedio} ${unidade}/dia. Continue monitorando periodicamente.`
+      return `O insumo "${nome}" está com estoque adequado (${dias} dias de cobertura, ${qtdAtual} ${unidade}). Consumo médio de ${consumoMedioLegivel}. Continue monitorando periodicamente.`
     }
     return `O insumo "${nome}" não possui consumo registrado (${qtdAtual} ${unidade} em estoque). Não é possível calcular previsão de ruptura.`
   }
@@ -345,7 +341,7 @@ export default function GraficoConsumo() {
                 const linhas = [
                   `Dias de cobertura: ${diasOriginais}${truncado}`,
                   `Qtd. atual: ${formatarNumero(item.quantidadeAtual)} ${item.unidadeMedida}`,
-                  `Consumo médio/dia: ${formatarNumero(item.consumoMedioDiario)} ${item.unidadeMedida}`,
+                  `Consumo médio/dia: ${formatarConsumoLegivel(item.consumoMedioDiario, item.unidadeMedida)}`,
                   `Estoque mínimo: ${formatarNumero(item.estoqueMinimo)} ${item.unidadeMedida}`,
                   `Nível de risco: ${getRiscoLabel(nivelCalc)}`
                 ]
@@ -580,7 +576,7 @@ export default function GraficoConsumo() {
                       </div>
                       <div className="detalhe-item">
                         <span className="detalhe-label">Consumo médio/dia</span>
-                        <span className="detalhe-valor">{formatarInteiro(itemSelecionado.consumoMedioDiario)} {itemSelecionado.unidadeMedida}</span>
+                        <span className="detalhe-valor">{formatarConsumoLegivel(itemSelecionado.consumoMedioDiario, itemSelecionado.unidadeMedida)}</span>
                       </div>
                       <div className="detalhe-item">
                         <span className="detalhe-label">Estoque mínimo</span>
