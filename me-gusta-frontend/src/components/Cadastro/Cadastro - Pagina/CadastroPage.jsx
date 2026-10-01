@@ -64,7 +64,7 @@ export default function CadastroPage() {
         icon: 'error',
         title: 'Erro de Cadastro',
         text: 'Todos os campos são obrigatórios. Por favor, preencha todos os campos.',
-        timer: 2000,
+        timer: 4000,
         showConfirmButton: false,
       })
       return
@@ -83,7 +83,7 @@ export default function CadastroPage() {
         icon: 'error',
         title: 'Erro de Cadastro',
         text: 'As senhas não coincidem. Por favor, verifique e tente novamente.',
-        timer: 2000,
+        timer: 4000,
         showConfirmButton: false,
       })
       return
@@ -91,8 +91,8 @@ export default function CadastroPage() {
       Swal.fire({
         icon: 'error',
         title: 'Erro de Cadastro',
-        text: 'O email fornecido é inválido. Por favor, insira um email válido.',
-        timer: 2000,
+        text: 'O email fornecido é inválido. Por favor, insira um email com @ e .',
+        timer: 4000,
         showConfirmButton: false,
       })
       return

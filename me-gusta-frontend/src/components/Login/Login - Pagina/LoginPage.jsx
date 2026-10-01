@@ -38,8 +38,8 @@ export default function LoginPage() {
       Swal.fire({
         icon: 'error',
         title: 'Erro de Login',
-        text: 'Ocorreu um erro ao realizar o login.',
-        timer: 2000,
+        text: 'Ocorreu um erro ao realizar o login, Email ou senha inválidos.',
+        timer: 3000,
         showConfirmButton: false,
       })  
     })
