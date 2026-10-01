@@ -38,3 +38,44 @@
   outline: 2px solid rgba(214, 40, 40, 0.15);
   border-color: var(--vermelho-primario);
 }
+
+.senha-wrapper {
+  position: relative;
+  width: 100%;
+  align-self: stretch;
+}
+
+.senha-wrapper input {
+  width: 100%;
+  padding-right: 48px;
+  box-sizing: border-box;
+}
+
+.btn-mostrar-senha {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  transition: color 0.15s ease;
+}
+
+.btn-mostrar-senha:hover {
+  color: var(--vermelho-primario);
+}
+
+.btn-mostrar-senha:focus {
+  outline: none;
+}
+
+.btn-mostrar-senha:focus-visible {
+  outline: 2px solid rgba(214, 40, 40, 0.3);
+  border-radius: 4px;
+}

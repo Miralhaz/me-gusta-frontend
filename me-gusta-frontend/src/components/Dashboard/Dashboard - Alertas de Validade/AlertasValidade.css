@@ -357,3 +357,56 @@
 .alerta-item.critico .btn-ocultar svg {
   stroke: #8b0000;
 }
+
+.modal-ocultos {
+  min-width: 700px;
+  max-width: 95vw;
+}
+
+.modal-ocultos-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.btn-restaurar-todos {
+  background: #27ae60;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-restaurar-todos:hover {
+  background: #219653;
+}
+
+.btn-restaurar-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-restaurar-item:hover {
+  opacity: 1;
+  background: rgba(39, 174, 96, 0.1);
+}
+
+.btn-restaurar-item svg {
+  stroke: #27ae60;
+}

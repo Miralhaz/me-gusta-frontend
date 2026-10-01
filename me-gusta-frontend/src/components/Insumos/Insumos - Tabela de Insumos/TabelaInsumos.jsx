@@ -1,5 +1,6 @@
 import { memo } from 'react'
 import './TabelaInsumos.css'
+import { formatarData } from '../../../utils/estoque'
 
 function TabelaInsumos({ insumos }) {
   const lista = Array.isArray(insumos) ? insumos : []
@@ -27,7 +28,7 @@ function TabelaInsumos({ insumos }) {
               <td>{insumo.codigoInsumo}</td>
               <td>{insumo.nome}</td>
               <td>{insumo.insumoCategoria?.nome ?? ''}</td>
-              <td>{insumo.dtCadastro}</td>
+              <td>{formatarData(insumo.dtCadastro)}</td>
               <td>{insumo.giroMensal?.toFixed(2) ?? '0.00'}</td>
               <td style={{ color: insumo.ativo ? 'green' : 'red', fontWeight: 'bold' }}>
                 {insumo.ativo ? 'ATIVO' : 'INATIVO'}

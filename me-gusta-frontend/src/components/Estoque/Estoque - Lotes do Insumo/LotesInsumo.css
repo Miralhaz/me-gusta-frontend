@@ -52,3 +52,83 @@
   padding: 30px 0;
 }
 
+.lotes-barra-ocultos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background: #fff3e0;
+  border: 1px solid #ffcc80;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #b26a00;
+}
+
+.lotes-barra-ocultos button {
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-mostrar-ocultos,
+.btn-esconder-ocultos {
+  background: #ffb300;
+  color: #333;
+}
+
+.btn-mostrar-ocultos:hover,
+.btn-esconder-ocultos:hover {
+  background: #ffa000;
+}
+
+.btn-restaurar {
+  background: #fff;
+  border: 1px solid #ffb300;
+  color: #b26a00;
+}
+
+.btn-restaurar:hover {
+  background: #fff8e1;
+}
+
+.lotes-vazio-com-ocultos {
+  text-align: center;
+  padding: 20px;
+}
+
+.lote-oculto {
+  opacity: 0.45;
+  background: #fafafa !important;
+}
+
+.lote-oculto td {
+  color: #999;
+}
+
+.btn-ocultar-lote,
+.btn-restaurar-lote {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-ocultar-lote:hover {
+  background: rgba(217, 67, 43, 0.1);
+}
+
+.btn-restaurar-lote:hover {
+  background: rgba(46, 158, 78, 0.1);
+}
+
