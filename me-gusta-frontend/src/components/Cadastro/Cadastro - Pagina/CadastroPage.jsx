@@ -96,12 +96,12 @@ export default function CadastroPage() {
         showConfirmButton: false,
       })
       return
-    } else if (![10, 11].includes(somenteDigitos(formulario.telefone).length)) {
+    } else if (![11].includes(somenteDigitos(formulario.telefone).length)) {
       Swal.fire({
         icon: 'error',
         title: 'Erro de Cadastro',
-        text: 'Informe um telefone válido com DDD.',
-        timer: 4000,
+        text: 'Informe um telefone (celular) válido com DDD.',
+        timer: 2000,
         showConfirmButton: false,
       })
       return
