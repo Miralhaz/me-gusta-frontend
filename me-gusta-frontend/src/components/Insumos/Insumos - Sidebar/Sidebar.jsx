@@ -1,7 +1,7 @@
+import { memo } from 'react'
 import './Sidebar.css'
 
-export default function Sidebar({ categorias, categoriaAtiva, onSelecionarCategoria, onNovaCategoria }) {
-
+function Sidebar({ categorias, categoriaAtiva, onSelecionarCategoria }) {
   return (
     <aside className="insumos-sidebar">
       <h3 className="insumos-sidebar-titulo">Categorias</h3>
@@ -25,5 +25,6 @@ export default function Sidebar({ categorias, categoriaAtiva, onSelecionarCatego
       </ul>
     </aside>
   )
-  
 }
+
+export default memo(Sidebar)

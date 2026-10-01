@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import api from '../../../provider/api'
+import Swal from 'sweetalert2'
 
 export default function CadastroInsumo({ categorias, unidadeMedida, onCadastrado, onFechar }) {
   const [nome, setNome] = useState('')
@@ -12,8 +13,33 @@ export default function CadastroInsumo({ categorias, unidadeMedida, onCadastrado
   const [enviando, setEnviando] = useState(false)
 
   async function handleSubmit(e) {
+
     e.preventDefault()
-    if (!nome.trim() || !codigo || !quantidadeAtual || !unidade || !categoria) return
+
+    if (!nome.trim() || !codigo || !quantidadeAtual || !unidade || !categoria
+    || !estoqueMinimo) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'Preencha todos os campos obrigatórios.',
+      })
+      return
+    } else if (quantidadeAtual <= 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'Quantidade em estoque não pode ser negativa ou igual a zero.',
+      })
+      return
+    } else if (estoqueMinimo <= 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'Estoque mínimo não pode ser negativo ou igual a zero.',
+      })
+      return
+    }
+
     setEnviando(true)
     try {
       await api.post('/insumos', {
@@ -46,7 +72,7 @@ export default function CadastroInsumo({ categorias, unidadeMedida, onCadastrado
       </label>
       <label>
         Quantidade Atual no Estoque
-        <input type="number" min="0" value={quantidadeAtual} onChange={(e) => setQuantidadeAtual(e.target.value)} />
+        <input type="number" value={quantidadeAtual} onChange={(e) => setQuantidadeAtual(e.target.value)} />
       </label>
       <label>
         Unidade de medida do Insumo
@@ -64,7 +90,7 @@ export default function CadastroInsumo({ categorias, unidadeMedida, onCadastrado
       </label>
       <label>
         Estoque mínimo desejado
-        <input type="number" min="0" value={estoqueMinimo} onChange={(e) => setEstoqueMinimo(e.target.value)} />
+        <input type="number" value={estoqueMinimo} onChange={(e) => setEstoqueMinimo(e.target.value)} />
       </label>
       <label>
         Ativo?
