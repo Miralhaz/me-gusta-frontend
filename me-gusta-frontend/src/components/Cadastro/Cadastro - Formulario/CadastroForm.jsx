@@ -1,4 +1,6 @@
 import './CadastroForm.css'
+import visibilityOn from '../../../assets/visibility_on.png'
+import visibilityOff from '../../../assets/visibility_off.png'
 
 export default function CadastroForm({ form, onChange, onSubmit, requisitosSenha, senhaVisivel, onAlternarVisibilidade }) {
     return (
@@ -28,7 +30,11 @@ export default function CadastroForm({ form, onChange, onSubmit, requisitosSenha
                         onClick={onAlternarVisibilidade}
                         aria-label={senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'}
                     >
-                        {senhaVisivel ? 'Ocultar' : 'Mostrar'}
+                        {senhaVisivel ? (
+                            <img src={visibilityOff} alt="" aria-hidden="true" />
+                        ) : (
+                            <img src={visibilityOn} alt="" aria-hidden="true" />
+                        )}
                     </button>
                 </div>
                 <ul className="requisitos-senha">
