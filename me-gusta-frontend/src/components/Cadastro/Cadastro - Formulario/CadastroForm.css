@@ -39,7 +39,6 @@
   border-color: var(--vermelho-primario);
 }
 
-/* Campo de senha com botão de mostrar/ocultar */
 .linha-senha {
   display: flex;
   align-items: center;
@@ -53,16 +52,25 @@
 
 .botao-visibilidade-senha {
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 42px;
-  padding: 0 12px;
+  width: 42px;
+  padding: 8px;
   border: 1px solid #d1d1d1;
   border-radius: 8px;
   background-color: var(--branco-primario);
   color: var(--texto-titulo);
-  font-family: inherit;
-  font-size: 13px;
   cursor: pointer;
   transition: border-color 0.12s ease;
+}
+
+.botao-visibilidade-senha img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .botao-visibilidade-senha:hover {
@@ -74,7 +82,6 @@
   border-color: var(--vermelho-primario);
 }
 
-/* Checklist de requisitos de senha */
 .requisitos-senha {
   list-style: none;
   margin: 8px 0 0;
