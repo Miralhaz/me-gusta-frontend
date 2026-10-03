@@ -26,6 +26,30 @@ export default function FogazzasPage() {
       })
   }
 
+  const [paginaAtual, setPaginaAtual] = useState(0)
+  const [totalPaginas, setTotalPaginas] = useState(0)
+  const tamanhoPagina = 10
+
+  function buscarFogazzas(pagina = 0) {
+    api.get('/fogazzas/paginado', {
+      params: { page: pagina, size: tamanhoPagina, sort: 'nome' }
+    })
+      .then((res) => {
+        setFogazzas(res.data.content)
+        setTotalPaginas(res.data.page.totalPages)
+        setPaginaAtual(res.data.page.number)
+      })
+      .catch((e) => {
+        if (e.response?.status === 204) {
+          setFogazzas([])
+        } else {
+          console.error('Erro ao buscar fogazzas:', e)
+        }
+      })
+  }
+
+  useEffect(() => buscarFogazzas(0), [])
+
   function buscarFogazzas() {
     api.get('/fogazzas')
       .then((res) => setFogazzas(Array.isArray(res.data) ? res.data : []))
@@ -67,12 +91,33 @@ export default function FogazzasPage() {
             modoVisualizacao={modoVisualizacao}
             onModoVisualizacaoChange={setModoVisualizacao}
             onNovaFogazza={() => setModalAberto('fogazza')}
+            onNovaCategoriaFogazza={() => setModalAberto('categoria')}
           />
           <Tabela fogazzas={fogazzasFiltradas} />
+
+          {totalPaginas > 1 && (
+            <div className="fogazzas-paginacao">
+              <button
+                disabled={paginaAtual === 0}
+                onClick={() => buscarFogazzas(paginaAtual - 1)}
+              >
+                Anterior
+              </button>
+
+              <span>{paginaAtual + 1} de {totalPaginas}</span>
+
+              <button
+                disabled={paginaAtual >= totalPaginas - 1}
+                onClick={() => buscarFogazzas(paginaAtual + 1)}
+              >
+                Próxima
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      <Modal aberto={modalAberto === 'categoria'} onFechar={fecharModal} titulo="Cadastro de uma nova categoria">
+      <Modal aberto={modalAberto === 'categoria'} onFechar={fecharModal} titulo="Cadastro de uma nova categoria de Fogazza">
         <CadastroCategoriaFogazza onCadastrado={buscarCategorias} onFechar={fecharModal} />
       </Modal>
 

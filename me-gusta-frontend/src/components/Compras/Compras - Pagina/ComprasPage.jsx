@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../../provider/api'
 import Navbar from '../../Comum em páginas/Navbar/Navbar'
@@ -7,42 +7,43 @@ import Toolbar from '../Compras - Toolbar/Toolbar'
 import Tabela from '../Compras - Tabela/TabelaCompras'
 import CadastroFornecedor from '../Compras - Cadastro Fornecedor/CadastroFornecedor'
 import ConfirmarRecebimento from '../Compras - Confirmar Recebimento/ConfirmarRecebimento'
+import Paginacao from '../../Comum em páginas/Paginacao/Paginacao'
 import './ComprasPage.css'
-
-const ROTAS_REFERENCIA = {
-  fornecedores: '/fornecedores',
-  unidades: '/unidade-medidas',
-  tiposStatus: '/tipo-status',
-  usuarios: '/usuarios',
-  insumos: '/insumos',
-}
-
-const REFERENCIAS_VAZIAS = {
-  fornecedores: [],
-  unidades: [],
-  tiposStatus: [],
-  usuarios: [],
-  insumos: [],
-}
 
 function extrairLista(res) {
   return Array.isArray(res.data) ? res.data : []
 }
 
+function getHoje() {
+  return new Date().toISOString().split('T')[0]
+}
+
+function getDataInicialPadrao() {
+  return '2022-01-01'
+}
+
+const TAMANHO_PAGINA = 10
+
 export default function ComprasPage() {
   const navigate = useNavigate()
-  const [compras, setCompras] = useState([])
-  const [referencias, setReferencias] = useState(REFERENCIAS_VAZIAS)
+  const [todasCompras, setTodasCompras] = useState([])
+  const [pagina, setPagina] = useState(0)
 
-  const [filtroData, setFiltroData] = useState('todos')
-  const [filtroStatus, setFiltroStatus] = useState('todos')
+  const [filtroDataInicio, setFiltroDataInicio] = useState(getDataInicialPadrao())
+  const [filtroDataFim, setFiltroDataFim] = useState(getHoje())
+  const [busca, setBusca] = useState('')
+  const [buscaAplicada, setBuscaAplicada] = useState('')
   const [modalAberto, setModalAberto] = useState(null)
   const [compraSelecionada, setCompraSelecionada] = useState(null)
   const [mostrarConfirmacaoNovaCompra, setMostrarConfirmacaoNovaCompra] = useState(false)
 
   const buscarCompras = useCallback(() => {
     api.get('/entradas-estoque')
-      .then((res) => setCompras(extrairLista(res)))
+      .then((res) => {
+        const lista = extrairLista(res)
+        setTodasCompras(lista)
+        setPagina(0)
+      })
       .catch((e) => {
         if (e.response?.status !== 204) {
           console.error('Erro ao buscar compras:', e)
@@ -50,30 +51,54 @@ export default function ComprasPage() {
       })
   }, [])
 
-  const buscarReferencias = useCallback(() => {
-    Object.entries(ROTAS_REFERENCIA).forEach(([chave, rota]) => {
-      api.get(rota)
-        .then((res) => setReferencias((atual) => ({ ...atual, [chave]: extrairLista(res) })))
-        .catch((e) => console.error(`Erro ao buscar ${rota}:`, e))
-    })
-  }, [])
-
   const atualizarCompras = useCallback(() => {
     buscarCompras()
   }, [buscarCompras])
 
   useEffect(() => { buscarCompras() }, [buscarCompras])
-  useEffect(() => { buscarReferencias() }, [buscarReferencias])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setBuscaAplicada(busca.trim())
+      setPagina(0)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [busca])
 
   const comprasFiltradas = useMemo(() => {
-    if (!Array.isArray(compras)) return []
-    return compras.filter((c) => {
-      const statusNome = c.tipoStatus?.nome ?? ''
-      const bateStatus = filtroStatus === 'todos' || statusNome === filtroStatus
-      const bateData = filtroData === 'todos' || dentroDoPeriodo(c.dtPedido, filtroData)
-      return bateStatus && bateData
+    return todasCompras.filter((compra) => {
+      if (buscaAplicada) {
+        const termo = buscaAplicada.toLowerCase()
+        const fornecedor = compra.fornecedor?.nome?.toLowerCase() ?? ''
+        const insumo = compra.insumo?.nome?.toLowerCase() ?? ''
+        const codigo = `#CO-${String(compra.id).padStart(3, '0')}`.toLowerCase()
+        if (!fornecedor.includes(termo) && !insumo.includes(termo) && !codigo.includes(termo)) {
+          return false
+        }
+      }
+      if (filtroDataInicio && compra.dtPedido) {
+        const dataPedido = compra.dtPedido.split('T')[0]
+        if (dataPedido < filtroDataInicio) return false
+      }
+      if (filtroDataFim && compra.dtPedido) {
+        const dataPedido = compra.dtPedido.split('T')[0]
+        if (dataPedido > filtroDataFim) return false
+      }
+      return true
     })
-  }, [compras, filtroData, filtroStatus])
+  }, [todasCompras, buscaAplicada, filtroDataInicio, filtroDataFim])
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPagina(0)
+  }, [filtroDataInicio, filtroDataFim])
+
+  const totalPaginas = Math.ceil(comprasFiltradas.length / TAMANHO_PAGINA) || 1
+
+  const comprasPaginadas = useMemo(() => {
+    const inicio = pagina * TAMANHO_PAGINA
+    return comprasFiltradas.slice(inicio, inicio + TAMANHO_PAGINA)
+  }, [comprasFiltradas, pagina])
 
   function abrirConfirmacao(compra) {
     setCompraSelecionada(compra)
@@ -97,19 +122,29 @@ export default function ComprasPage() {
       <div className="compras-pagina">
         <div className="compras-conteudo">
           <Toolbar
-            filtroData={filtroData}
-            onFiltroDataChange={setFiltroData}
-            filtroStatus={filtroStatus}
-            onFiltroStatusChange={setFiltroStatus}
+            filtroDataInicio={filtroDataInicio}
+            onFiltroDataInicioChange={setFiltroDataInicio}
+            filtroDataFim={filtroDataFim}
+            onFiltroDataFimChange={setFiltroDataFim}
+            busca={busca}
+            onBuscaChange={setBusca}
             onNovaCompra={() => setMostrarConfirmacaoNovaCompra(true)}
             onNovoFornecedor={() => setModalAberto('fornecedor')}
           />
-          <Tabela compras={comprasFiltradas} onPedirConfirmacao={abrirConfirmacao} />
+          <Tabela compras={comprasPaginadas} onPedirConfirmacao={abrirConfirmacao} />
+          {totalPaginas > 1 && (
+            <Paginacao
+              paginaAtual={pagina}
+              totalPaginas={totalPaginas}
+              onMudarPagina={setPagina}
+              ariaLabel="Paginação de compras"
+            />
+          )}
         </div>
       </div>
 
       <Modal aberto={modalAberto === 'fornecedor'} onFechar={fecharModal} titulo="Cadastre um novo fornecedor">
-        <CadastroFornecedor onCadastrado={buscarReferencias} onFechar={fecharModal} />
+        <CadastroFornecedor onFechar={fecharModal} />
       </Modal>
 
       <Modal
@@ -132,24 +167,4 @@ export default function ComprasPage() {
       </Modal>
     </>
   )
-}
-
-function paraDiaUTC(data) {
-  return Date.UTC(data.getUTCFullYear(), data.getUTCMonth(), data.getUTCDate())
-}
-
-function dentroDoPeriodo(dataCompraISO, filtro) {
-  if (!dataCompraISO) return false
-
-  const dataCompra = new Date(dataCompraISO)
-  const hoje = new Date()
-
-  const diaCompraUTC = paraDiaUTC(dataCompra)
-  const diaHojeUTC = Date.UTC(hoje.getFullYear(), hoje.getMonth(), hoje.getDate())
-  const diffDias = (diaHojeUTC - diaCompraUTC) / (1000 * 60 * 60 * 24)
-
-  if (filtro === '7dias') return diffDias >= 0 && diffDias <= 7
-  if (filtro === '30dias') return diffDias >= 0 && diffDias <= 30
-  if (filtro === 'mes') return dataCompra.getUTCMonth() === hoje.getMonth() && dataCompra.getUTCFullYear() === hoje.getUTCFullYear()
-  return true
 }

@@ -1,12 +1,13 @@
+import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
+import api from '../../../provider/api'
+import { formatarData, formatarNumero, extrairLista, diasAteValidade } from '../../../utils/estoque'
+import Modal from '../../Comum em páginas/Modal/Modal'
 import './AlertasValidade.css'
 
-// Dados mockados — serão substituídos por props/fetch futuramente
-const INSUMOS_PROXIMOS = [
-  { nome: 'Frango Desfiado', data: 'Vence amanhã',    urgencia: 'critico' },
-  { nome: 'Tomate',          data: 'Vence 29/03/2026', urgencia: 'critico' },
-  { nome: 'Mussarela',       data: 'Vence 15/04/2026', urgencia: 'atencao' },
-  { nome: 'Rúcula',          data: 'Vence 28/04/2026', urgencia: 'atencao' },
-]
+const DIAS_CRITICO = 10
+const DIAS_MUITO_PROXIMO = 20
+const DIAS_ATENCAO_ESTENDIDA = 31
 
 const ICONE_ALERTA = (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c0392b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -16,10 +17,297 @@ const ICONE_ALERTA = (
   </svg>
 )
 
-const criticos  = INSUMOS_PROXIMOS.filter(i => i.urgencia === 'critico').length
-const atencoes  = INSUMOS_PROXIMOS.filter(i => i.urgencia === 'atencao').length
+const ICONE_FECHAR = (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+)
+
+function rotuloCustom(dias) {
+  if (dias === null || dias === undefined) return 'sem validade'
+  if (dias < 0) return `venceu em ${Math.abs(dias)} ${Math.abs(dias) === 1 ? 'dia' : 'dias'}`
+  if (dias === 0) return 'vence hoje'
+  return `vence em ${dias}d`
+}
+
+function getCategoria(dias) {
+  if (dias === null || dias === undefined) return 'sem-validade'
+  if (dias < 0) return 'vencido'
+  if (dias <= DIAS_CRITICO) return 'critico'
+  if (dias <= DIAS_MUITO_PROXIMO) return 'muito-proximo'
+  if (dias <= DIAS_ATENCAO_ESTENDIDA) return 'atencao-estendida'
+  return 'ok'
+}
+
+const STORAGE_KEY = 'alertas-validade-ocultos'
+
+function getOcultos() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY)
+    return data ? JSON.parse(data) : []
+  } catch {
+    return []
+  }
+}
+
+function salvarOcultos(ocultos) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(ocultos))
+  } catch (e) {
+    console.warn('Não foi possível salvar itens ocultos:', e)
+  }
+}
+
+function makeLoteKey(insumoId, lote, dtValidade) {
+  return `${insumoId}-${lote || dtValidade}`
+}
 
 export default function AlertasValidade() {
+  const [insumosProximos, setInsumosProximos] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [modalAberto, setModalAberto] = useState(false)
+  const [modalItens, setModalItens] = useState([])
+  const [ocultos, setOcultos] = useState([])
+  const [modalOcultosAberto, setModalOcultosAberto] = useState(false)
+  const [itensOcultosDetalhes, setItensOcultosDetalhes] = useState([])
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    setOcultos(getOcultos())
+  }, [])
+
+  const ocultarItem = (item) => {
+    const key = makeLoteKey(item.id, item.lote, item.dtValidade)
+    const novosOcultos = [...ocultos, key]
+    setOcultos(novosOcultos)
+    salvarOcultos(novosOcultos)
+    setInsumosProximos(prev => prev.filter(i => makeLoteKey(i.id, i.lote, i.dtValidade) !== key))
+  }
+
+  const restaurarItem = (item) => {
+    const key = makeLoteKey(item.id, item.lote, item.dtValidade)
+    const novosOcultos = ocultos.filter(id => id !== key)
+    setOcultos(novosOcultos)
+    salvarOcultos(novosOcultos)
+    setItensOcultosDetalhes(prev => prev.filter(i => makeLoteKey(i.id, i.lote, i.dtValidade) !== key))
+    buscarDados()
+  }
+
+  const restaurarTodos = () => {
+    setOcultos([])
+    salvarOcultos([])
+    setItensOcultosDetalhes([])
+    buscarDados()
+  }
+
+  const abrirModalOcultos = async () => {
+    if (ocultos.length === 0) return
+    try {
+      const [resInsumos, resEntradas] = await Promise.all([
+        api.get('/insumos'),
+        api.get('/entradas-estoque')
+      ])
+      const insumosData = extrairLista(resInsumos)
+      const entradasData = extrairLista(resEntradas)
+
+      const insumoInfo = new Map()
+      for (const insumo of insumosData) {
+        if (insumo.id) {
+          insumoInfo.set(insumo.id, {
+            quantidadeAtual: insumo.quantidadeAtual,
+            estoqueMinimo: insumo.estoqueMinimo,
+            unidade: insumo.unidadeInsumo?.unidade ?? '',
+            nome: insumo.nome,
+          })
+        }
+      }
+
+      const lotesPorInsumo = new Map()
+      for (const entrada of entradasData) {
+        const insumo = entrada.insumo
+        if (!insumo?.id || !entrada.dtValidade) continue
+        const id = insumo.id
+        const key = makeLoteKey(id, entrada.lote, entrada.dtValidade)
+        if (!ocultos.includes(key)) continue
+        const dias = diasAteValidade(entrada.dtValidade)
+        const categoria = getCategoria(dias)
+        if (categoria === 'ok' || categoria === 'sem-validade') continue
+        const info = insumoInfo.get(id) ?? {}
+        if (!lotesPorInsumo.has(id)) {
+          lotesPorInsumo.set(id, [])
+        }
+        lotesPorInsumo.get(id).push({
+          id,
+          nome: info.nome ?? insumo.nome,
+          dias,
+          dtValidade: entrada.dtValidade,
+          unidade: info.unidade,
+          quantidadeAtual: info.quantidadeAtual,
+          estoqueMinimo: info.estoqueMinimo,
+          fornecedor: entrada.fornecedor?.nome ?? '—',
+          lote: entrada.lote ?? '—',
+        })
+      }
+
+      const itens = []
+      for (const [, lotes] of lotesPorInsumo.entries()) {
+        for (const lote of lotes) {
+          itens.push({
+            ...lote,
+            data: rotuloCustom(lote.dias),
+            urgencia: getCategoria(lote.dias),
+          })
+        }
+      }
+      itens.sort((a, b) => a.dias - b.dias)
+
+      setItensOcultosDetalhes(itens)
+      setModalOcultosAberto(true)
+    } catch (e) {
+      console.error('Erro ao buscar itens ocultos:', e)
+    }
+  }
+
+  const buscarDados = useCallback(async () => {
+    let ativo = true
+
+    try {
+      const [resInsumos, resEntradas] = await Promise.all([
+        api.get('/insumos'),
+        api.get('/entradas-estoque')
+      ])
+
+      if (!ativo) return
+
+      const insumosData = extrairLista(resInsumos)
+      const entradasData = extrairLista(resEntradas)
+
+      const insumoInfo = new Map()
+      for (const insumo of insumosData) {
+        if (insumo.id) {
+          insumoInfo.set(insumo.id, {
+            quantidadeAtual: insumo.quantidadeAtual,
+            estoqueMinimo: insumo.estoqueMinimo,
+            unidade: insumo.unidadeInsumo?.unidade ?? '',
+            nome: insumo.nome,
+          })
+        }
+      }
+
+      const lotesPorInsumo = new Map()
+
+      for (const entrada of entradasData) {
+        const insumo = entrada.insumo
+        if (!insumo?.id || !entrada.dtValidade) continue
+
+        const id = insumo.id
+        const dias = diasAteValidade(entrada.dtValidade)
+        const categoria = getCategoria(dias)
+
+        if (categoria === 'ok' || categoria === 'sem-validade') continue
+
+        const info = insumoInfo.get(id) ?? {}
+        if (!lotesPorInsumo.has(id)) {
+          lotesPorInsumo.set(id, [])
+        }
+        lotesPorInsumo.get(id).push({
+          id,
+          nome: info.nome ?? insumo.nome,
+          dias,
+          dtValidade: entrada.dtValidade,
+          unidade: info.unidade,
+          quantidadeAtual: info.quantidadeAtual,
+          estoqueMinimo: info.estoqueMinimo,
+          fornecedor: entrada.fornecedor?.nome ?? '—',
+          lote: entrada.lote ?? '—',
+        })
+      }
+
+      const proximos = []
+      for (const [, lotes] of lotesPorInsumo.entries()) {
+        for (const lote of lotes) {
+          const key = makeLoteKey(lote.id, lote.lote, lote.dtValidade)
+          if (ocultos.includes(key)) continue
+          proximos.push({
+            ...lote,
+            data: rotuloCustom(lote.dias),
+            urgencia: getCategoria(lote.dias),
+          })
+        }
+      }
+
+      proximos.sort((a, b) => a.dias - b.dias)
+
+      setInsumosProximos(proximos)
+    } catch (e) {
+      console.error('Erro ao buscar dados para alertas de validade:', e)
+      setInsumosProximos([])
+    } finally {
+      if (ativo) setLoading(false)
+    }
+
+    return () => { ativo = false }
+  }, [ocultos])
+
+  useEffect(() => {
+    buscarDados()
+  }, [buscarDados])
+
+  const vencidos = insumosProximos.filter(i => i.dias < 0)
+  const criticos = insumosProximos.filter(i => i.dias >= 0 && i.dias <= DIAS_CRITICO)
+  const muitoProximos = insumosProximos.filter(i => i.dias > DIAS_CRITICO && i.dias <= DIAS_MUITO_PROXIMO)
+  const atencaoEstendida = insumosProximos.filter(i => i.dias > DIAS_MUITO_PROXIMO && i.dias <= DIAS_ATENCAO_ESTENDIDA)
+  const total = insumosProximos.length
+
+  const abrirModalComTodos = () => {
+    setModalItens([...vencidos, ...criticos, ...muitoProximos])
+    setModalAberto(true)
+  }
+
+  const abrirModalCategoria = (categoria) => {
+    if (categoria === 'vencido') setModalItens(vencidos)
+    else if (categoria === 'critico') setModalItens(criticos)
+    else if (categoria === 'muito-proximo') setModalItens(muitoProximos)
+    else if (categoria === 'atencao-estendida') setModalItens(atencaoEstendida)
+    setModalAberto(true)
+  }
+
+  const fecharModal = () => {
+    setModalAberto(false)
+    setModalItens([])
+  }
+
+  const temVencido = modalItens.some(i => i.dias < 0)
+  const temCritico = modalItens.some(i => i.dias >= 0 && i.dias <= DIAS_CRITICO)
+  const temMuitoProximo = modalItens.some(i => i.dias > DIAS_CRITICO)
+
+  const tituloModal = temVencido && (temCritico || temMuitoProximo)
+    ? 'Insumos Vencidos e Próximos do Vencimento'
+    : temVencido
+      ? 'Insumos Vencidos'
+      : temCritico && temMuitoProximo
+        ? 'Insumos Próximos do Vencimento'
+        : temCritico
+          ? 'Insumos Extremamente Próximos (≤10 dias)'
+          : 'Insumos Muito Próximos (≤20 dias)'
+
+  if (loading) {
+    return (
+      <div className="alertas-validade">
+        <div className="alertas-cabecalho">
+          {ICONE_ALERTA}
+          Alertas de validade
+        </div>
+        <div className="alertas-corpo">
+          <div className="alerta-destaque">
+            <strong>Carregando...</strong>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="alertas-validade">
       <div className="alertas-cabecalho">
@@ -28,26 +316,221 @@ export default function AlertasValidade() {
       </div>
 
       <div className="alertas-corpo">
-        <div className="alerta-destaque">
-          <strong>ATENÇÃO: {INSUMOS_PROXIMOS.length} Insumos próximos da Data de Vencimento.</strong>
-          <ul>
-            {criticos > 0  && <li>{criticos} {criticos === 1 ? 'Insumo extremamente próximo' : 'Insumos extremamente próximos'}.</li>}
-            {atencoes > 0  && <li>{atencoes} {atencoes === 1 ? 'Insumo próximo' : 'Insumos próximos'}.</li>}
-          </ul>
-        </div>
+          <div
+            className={`alerta-destaque ${total === 0 ? 'alerta-ok' : ''}`}
+            onClick={total === 0 ? undefined : abrirModalComTodos}
+            role={total === 0 ? undefined : 'button'}
+            tabIndex={total === 0 ? undefined : 0}
+            onKeyDown={total === 0 ? undefined : (e) => (e.key === 'Enter' || e.key === ' ') && abrirModalComTodos()}
+            aria-label={total === 0 ? undefined : `Ver ${vencidos.length} insumos vencidos e ${criticos.length + muitoProximos.length} insumos próximos do vencimento`}
+          >
+            {total === 0 ? (
+              <>
+                <span className="alerta-ok-icon">✓</span>
+                <strong>OK</strong>
+                <p>Não há insumo(s) vencido(s) ou próximo(s) da data de vencimento!</p>
+              </>
+            ) : (
+              <>
+                <strong>ATENÇÃO: {total} Insumo(s) próximo(s) ou vencido(s).</strong>
+                <ul>
+                  {vencidos.length > 0 && (
+                    <li>{vencidos.length} {vencidos.length === 1 ? 'Insumo passou da data de validade' : 'Insumos passaram da data de validade'}.</li>
+                  )}
+                  {criticos.length > 0 && (
+                    <li>{criticos.length} {criticos.length === 1 ? 'Insumo extremamente próximo (≤10 dias)' : 'Insumos extremamente próximos (≤10 dias)'}.</li>
+                  )}
+                  {muitoProximos.length > 0 && (
+                    <li>{muitoProximos.length} {muitoProximos.length === 1 ? 'Insumo muito próximo (≤20 dias)' : 'Insumos muito próximos (≤20 dias)'}.</li>
+                  )}
+                </ul>
+              </>
+            )}
+          </div>
 
-        <div className="alertas-lista">
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#555', marginBottom: 2 }}>
-            Insumos próximos:
-          </span>
-          {INSUMOS_PROXIMOS.map((item) => (
-            <div key={item.nome} className={`alerta-item ${item.urgencia}`}>
-              <span>{item.nome}</span>
-              <span className="alerta-item-data">{item.data}</span>
+          <div className="alertas-lista">
+            <div className="alertas-lista-cabecalho">
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#555' }}>
+                Insumo(s) próximo(s) ou vencido(s):
+              </span>
+              {ocultos.length > 0 && (
+                <button
+                  className="btn-restaurar"
+                  onClick={abrirModalOcultos}
+                  title="Gerenciar itens ocultos"
+                >
+                  {ocultos.length} oculto{ocultos.length > 1 ? 's' : ''} • Gerenciar
+                </button>
+              )}
             </div>
-          ))}
+            {total === 0 ? (
+              <div style={{ textAlign: 'center', color: '#666', padding: '20px', fontSize: 13 }}>
+                Nenhum dado encontrado.
+              </div>
+            ) : (
+              [...vencidos, ...criticos, ...muitoProximos, ...atencaoEstendida].map((item) => {
+                const categoria = getCategoria(item.dias)
+                const isVencido = item.dias < 0
+                const itemKey = `${item.id}-${item.lote || item.dtValidade}`
+                const handleClick = () => {
+                  if (isVencido) {
+                    const params = new URLSearchParams()
+                    params.set('insumoId', item.id)
+                    if (item.lote && item.lote !== '—') params.set('lote', item.lote)
+                    if (item.dtValidade) params.set('dtValidade', item.dtValidade)
+                    navigate(`/estoque?${params.toString()}`)
+                  } else {
+                    abrirModalCategoria(categoria)
+                  }
+                }
+                return (
+                  <div
+                    key={itemKey}
+                    className={`alerta-item ${categoria}`}
+                    onClick={handleClick}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClick()}
+                  >
+                    <span>{item.nome}</span>
+                    <span className="alerta-item-data">{item.data}</span>
+                    <button
+                      className="btn-ocultar"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        ocultarItem(item)
+                      }}
+                      title="Ocultar este alerta"
+                      aria-label={`Ocultar alerta de ${item.nome}`}
+                    >
+                      {ICONE_FECHAR}
+                    </button>
+                  </div>
+                )
+              })
+            )}
+          </div>
         </div>
-      </div>
+      <Modal
+        aberto={modalAberto}
+        onFechar={fecharModal}
+        titulo={tituloModal}
+      >
+        <div className="modal-detalhes-validade">
+          {modalItens.length === 0 ? (
+            <p style={{ textAlign: 'center', color: '#666', padding: '20px' }}>Nenhum insumo nesta categoria.</p>
+          ) : (
+            <div className="modal-tabela-wrapper">
+              <table className="modal-tabela">
+                <thead>
+                  <tr>
+                    <th>Insumo</th>
+                    <th>Validade</th>
+                    <th>Qtd. Atual</th>
+                    <th>Est. Mínimo</th>
+                    <th>Fornecedor</th>
+                    <th>Lote</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {modalItens.map((item) => {
+                    const itemKey = `${item.id}-${item.lote || item.dtValidade}`
+                    return (
+                      <tr key={itemKey} className={`lote-${getCategoria(item.dias)}`}>
+                        <td style={{ fontWeight: 500 }}>{item.nome}</td>
+                        <td>
+                          {formatarData(item.dtValidade)}
+                          <span className="lotes-dias">{item.data}</span>
+                        </td>
+                        <td>{formatarNumero(item.quantidadeAtual)} {item.unidade}</td>
+                        <td>{formatarNumero(item.estoqueMinimo)} {item.unidade}</td>
+                        <td>{item.fornecedor}</td>
+                        <td>{item.lote}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </Modal>
+
+      <Modal
+        aberto={modalOcultosAberto}
+        onFechar={() => {
+          setModalOcultosAberto(false)
+          setItensOcultosDetalhes([])
+        }}
+        titulo="Itens ocultos"
+      >
+        <div className="modal-ocultos">
+          {itensOcultosDetalhes.length === 0 ? (
+            <p style={{ textAlign: 'center', color: '#666', padding: '20px' }}>Nenhum item oculto.</p>
+          ) : (
+            <>
+              <div className="modal-ocultos-cabecalho">
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#555' }}>
+                  {itensOcultosDetalhes.length} item{itensOcultosDetalhes.length > 1 ? 's' : ''} oculto{itensOcultosDetalhes.length > 1 ? 's' : ''}
+                </span>
+                <button
+                  className="btn-restaurar-todos"
+                  onClick={restaurarTodos}
+                  title="Restaurar todos os itens ocultos"
+                >
+                  Restaurar todos
+                </button>
+              </div>
+              <div className="modal-tabela-wrapper">
+                <table className="modal-tabela">
+                  <thead>
+                    <tr>
+                      <th>Insumo</th>
+                      <th>Validade</th>
+                      <th>Qtd. Atual</th>
+                      <th>Est. Mínimo</th>
+                      <th>Fornecedor</th>
+                      <th>Lote</th>
+                      <th style={{ width: 48, textAlign: 'center' }}>Ação</th>
+                    </tr>
+                  </thead>
+<tbody>
+                      {itensOcultosDetalhes.map((item) => {
+                        const itemKey = `${item.id}-${item.lote || item.dtValidade}`
+                        return (
+                          <tr key={itemKey} className={`lote-${getCategoria(item.dias)}`}>
+                            <td style={{ fontWeight: 500 }}>{item.nome}</td>
+                            <td>
+                              {formatarData(item.dtValidade)}
+                              <span className="lotes-dias">{item.data}</span>
+                            </td>
+                            <td>{formatarNumero(item.quantidadeAtual)} {item.unidade}</td>
+                            <td>{formatarNumero(item.estoqueMinimo)} {item.unidade}</td>
+                            <td>{item.fornecedor}</td>
+                            <td>{item.lote}</td>
+                            <td style={{ textAlign: 'center' }}>
+                              <button
+                                className="btn-restaurar-item"
+                                onClick={() => restaurarItem(item)}
+                                title="Restaurar este item"
+                                aria-label={`Restaurar ${item.nome}`}
+                              >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#27ae60" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="23 4 23 10 17 10" />
+                                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                                </svg>
+                              </button>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
+      </Modal>
     </div>
   )
 }

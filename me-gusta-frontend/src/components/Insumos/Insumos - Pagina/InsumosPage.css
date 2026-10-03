@@ -13,4 +13,25 @@
   border-radius: 8px;
   padding: 20px 24px;
   background: rgba(224, 224, 224, 0.4);
+  height: 100%;
+}
+
+.insumos-paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 0;
+  margin-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.insumos-paginacao .botao-outline {
+  padding: 8px 16px;
+}
+
+.insumos-paginacao span {
+  font-size: 0.85rem;
+  color: #555;
+  white-space: nowrap;
 }

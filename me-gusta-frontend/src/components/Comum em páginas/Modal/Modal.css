@@ -175,3 +175,15 @@
     opacity: 0.6;
     cursor: default;
 }
+
+.form-cadastro__checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #740202;
+    align-self: center;
+}
+
+.form-cadastro__checkbox:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(214, 40, 40, 0.2);
+}

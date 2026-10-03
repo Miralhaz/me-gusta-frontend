@@ -1,6 +1,6 @@
 import './Sidebar.css'
 
-export default function Sidebar({ categorias, categoriaAtiva, onSelecionarCategoria, onNovaCategoria }) {
+export default function Sidebar({ categorias, categoriaAtiva, onSelecionarCategoria }) {
 
   return (
     <aside className="fogazzas-sidebar">
@@ -23,10 +23,6 @@ export default function Sidebar({ categorias, categoriaAtiva, onSelecionarCatego
           </li>
         ))}
       </ul>
-
-      <button className="fogazzas-sidebar-botao" onClick={onNovaCategoria}>
-        + Nova Categoria
-      </button>
     </aside>
   )
 }

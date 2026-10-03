@@ -8,6 +8,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-height: 0;
 }
 
 .reposicao-cabecalho {
@@ -17,6 +18,19 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--texto-titulo);
+  flex-shrink: 0;
+}
+
+.reposicao-tabela-container {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.reposicao-tabela-container::-webkit-scrollbar {
+  display: none;
 }
 
 .reposicao-tabela {

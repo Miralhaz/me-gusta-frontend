@@ -5,7 +5,6 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  min-height: 480px;
   background: rgba(224, 224, 224, 0.4);
   border-radius: 8px;
 }
@@ -27,6 +26,27 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(214, 40, 40, 0.3) transparent;
+}
+
+.insumos-sidebar-lista::-webkit-scrollbar {
+  width: 4px;
+}
+
+.insumos-sidebar-lista::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.insumos-sidebar-lista::-webkit-scrollbar-thumb {
+  background: rgba(214, 40, 40, 0.3);
+  border-radius: 2px;
+}
+
+.insumos-sidebar-lista::-webkit-scrollbar-thumb:hover {
+  background: rgba(214, 40, 40, 0.5);
 }
 
 .insumos-sidebar-lista li {
