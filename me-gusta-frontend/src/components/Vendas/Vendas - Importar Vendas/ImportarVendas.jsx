@@ -17,13 +17,25 @@ export default function ImportarVendas({ onImportado, onFechar }) {
 
     api.post('/vendas/importar', formData)
       .then((resposta) => {
-        onImportado?.(resposta.data)
-        Swal.fire({
-          icon: 'success',
-          title: 'Vendas importadas com sucesso!',
-          timer: 2000,
-          showConfirmButton: false,
-        })
+        const dados = resposta.data
+        if (Array.isArray(dados) && dados.length === 0) {
+          onImportado?.([])
+          Swal.fire({
+            icon: 'info',
+            title: 'Nenhum insumo foi alterado',
+            text: 'A planilha é válida, mas nenhum insumo teve a quantidade alterada.',
+            timer: 2500,
+            showConfirmButton: false,
+          })
+        } else {
+          onImportado?.(dados)
+          Swal.fire({
+            icon: 'success',
+            title: 'Vendas importadas com sucesso!',
+            timer: 2000,
+            showConfirmButton: false,
+          })
+        }
         onFechar?.()
       })
       .catch((erro) => {
@@ -32,8 +44,8 @@ export default function ImportarVendas({ onImportado, onFechar }) {
           Swal.fire({
             icon: 'error',
             title: 'Erro de Importação',
-            text: 'O arquivo enviado deve ser uma planilha .xlsx válida.',
-            timer: 3000,
+            text: 'O arquivo enviado deve ser o relatório de itens vendidos em formato .xlsx, com as colunas "Nome Prod" e "Qtd." na linha de cabeçalho.',
+            timer: 3500,
             showConfirmButton: false,
           })
         } else if (erro.response?.status === 401) {
@@ -42,6 +54,14 @@ export default function ImportarVendas({ onImportado, onFechar }) {
             title: 'Sessão expirada',
             text: 'Sua sessão não é válida. Por favor, faça login novamente.',
             timer: 3000,
+            showConfirmButton: false,
+          })
+        } else if (erro.response?.status === 409) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Estoque insuficiente',
+            text: 'A importação foi desfeita por falta de estoque. Nenhuma alteração foi persistida.',
+            timer: 3500,
             showConfirmButton: false,
           })
         } else {
