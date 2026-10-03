@@ -50,17 +50,7 @@ export default function FogazzasPage() {
 
   useEffect(() => buscarFogazzas(0), [])
 
-  function buscarFogazzas() {
-    api.get('/fogazzas')
-      .then((res) => setFogazzas(Array.isArray(res.data) ? res.data : []))
-      .catch((e) => {
-        if (e.response?.status !== 204) console.error('Erro ao buscar fogazzas:', e)
-        setFogazzas([])
-      })
-  }
-
   useEffect(buscarCategorias, [])
-  useEffect(buscarFogazzas, [])
 
   const fogazzasFiltradas = useMemo(() => {
     return fogazzas.filter((f) => {

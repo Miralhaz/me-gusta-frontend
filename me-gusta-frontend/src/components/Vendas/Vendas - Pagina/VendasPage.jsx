@@ -1,16 +1,32 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Navbar from '../../Comum em páginas/Navbar/Navbar'
 import Modal from '../../Comum em páginas/Modal/Modal'
 import Toolbar from '../Vendas - Toolbar/Toolbar'
 import TabelaVendas from '../Vendas - Tabela de Vendas/TabelaVendas'
 import ImportarVendas from '../Vendas - Importar Vendas/ImportarVendas'
+import RegrasImportacao from '../Vendas - Regras de Importacao/RegrasImportacao'
 import './VendasPage.css'
 
-const CHAVE_VENDAS = 'vendas-importadas'
+const CHAVE_BAIXAS = 'vendas-baixas-importadas'
+const TODAS = 'todas'
 
-function lerVendasSalvas() {
+// Fonte única dos rótulos, das chaves usadas na ordenação e do tipo de comparação.
+const COLUNAS = [
+  { chave: 'codigo', rotulo: 'Código do insumo', tipo: 'texto' },
+  { chave: 'nome', rotulo: 'Insumo', tipo: 'texto' },
+  { chave: 'unidade', rotulo: 'Unidade de medida', tipo: 'texto' },
+  { chave: 'quantidadeAtual', rotulo: 'Quantidade atual', tipo: 'numero' },
+  { chave: 'quantidadeSubtraida', rotulo: 'Quantidade subtraída', tipo: 'numero' },
+  { chave: 'quantidadeAposSubtracao', rotulo: 'Quantidade após subtração', tipo: 'numero' },
+]
+
+function valorPresente(valor) {
+  return valor === undefined || valor === null || valor === '' ? null : valor
+}
+
+function lerBaixasSalvas() {
   try {
-    const bruto = localStorage.getItem(CHAVE_VENDAS)
+    const bruto = localStorage.getItem(CHAVE_BAIXAS)
     if (!bruto) return []
     const dados = JSON.parse(bruto)
     return Array.isArray(dados) ? dados : []
@@ -19,54 +35,100 @@ function lerVendasSalvas() {
   }
 }
 
-function dataAtualFormatada() {
-  const hoje = new Date()
-  const dia = String(hoje.getDate()).padStart(2, '0')
-  const mes = String(hoje.getMonth() + 1).padStart(2, '0')
-  return `${dia}/${mes}/${hoje.getFullYear()}`
-}
-
-function formatarData(dataVenda) {
-  if (!dataVenda) return dataAtualFormatada()
-  const [ano, mes, dia] = String(dataVenda).split('-')
-  if (!ano || !mes || !dia) return null
-  return `${dia}/${mes}/${ano}`
-}
-
-function normalizarVendas(itens) {
-  return (Array.isArray(itens) ? itens : []).map((item, index) => ({
-    codigo: item.codigo ?? `#VE-${String(index + 1).padStart(2, '0')}`,
-    fogazza: item.fogazza ?? item.nomeFogazza,
-    quantidade: item.quantidade ?? item.quantidadeFogazza,
-    dataVenda: formatarData(item.dataVenda),
+// Espelha BaixaInsumoResponse; campo ausente ou vazio vira null e a célula renderiza "—".
+function normalizarBaixas(itens) {
+  return (Array.isArray(itens) ? itens : []).map((item) => ({
+    codigo: valorPresente(item?.codigoInsumo),
+    nome: valorPresente(item?.nomeInsumo),
+    unidade: valorPresente(item?.unidadeMedida),
+    quantidadeAtual: valorPresente(item?.quantidadeAtual),
+    quantidadeSubtraida: valorPresente(item?.quantidadeSubtraida),
+    quantidadeAposSubtracao: valorPresente(item?.quantidadeAposSubtracao),
   }))
 }
 
-export default function VendasPage() {
-  const [vendas, setVendas] = useState(lerVendasSalvas)
-  const [busca, setBusca] = useState('')
-  const [mesSelecionado, setMesSelecionado] = useState('todos')
-  const [modalAberto, setModalAberto] = useState(false)
+// A busca casa por nome ou por código do insumo, sem diferenciar maiúsculas/minúsculas.
+function casarBusca(termo, insumo) {
+  const alvo = termo.trim().toLowerCase()
+  if (!alvo) return true
+  return (
+    String(insumo.nome ?? '').toLowerCase().includes(alvo) ||
+    String(insumo.codigo ?? '').toLowerCase().includes(alvo)
+  )
+}
 
-  function aplicarVendas(itens) {
-    const normalizadas = normalizarVendas(itens)
-    setVendas(normalizadas)
-    localStorage.setItem(CHAVE_VENDAS, JSON.stringify(normalizadas))
+function valorVazio(valor) {
+  return valor === null || valor === undefined || valor === ''
+}
+
+// Compara dois valores sem considerar o sentido: vazios ficam depois dos preenchidos.
+function compararValores(a, b, tipo) {
+  if (valorVazio(a) || valorVazio(b)) {
+    const vazioA = valorVazio(a)
+    const vazioB = valorVazio(b)
+    if (vazioA && vazioB) return 0
+    return vazioA ? 1 : -1
+  }
+  if (tipo === 'numero') return Number(a) - Number(b)
+  return String(a).localeCompare(String(b), 'pt-BR')
+}
+
+function ordenarPorColuna(lista, coluna, tipo, direcao) {
+  if (!coluna) return lista
+  const decrescente = direcao === 'desc'
+  return [...lista].sort((a, b) => {
+    const va = a[coluna]
+    const vb = b[coluna]
+    const diferenca = compararValores(va, vb, tipo)
+    // O sinal da direção só vale entre valores preenchidos: os vazios ficam ao fim nos dois sentidos.
+    if (valorVazio(va) || valorVazio(vb)) return diferenca
+    return decrescente ? -diferenca : diferenca
+  })
+}
+
+export default function VendasPage() {
+  const [insumos, setInsumos] = useState(lerBaixasSalvas)
+  const [busca, setBusca] = useState('')
+  const [unidadeSelecionada, setUnidadeSelecionada] = useState(TODAS)
+  const [ordem, setOrdem] = useState({ coluna: null, direcao: 'asc' })
+  const [etapa, setEtapa] = useState(null)
+
+  function aplicarBaixas(itens) {
+    const normalizados = normalizarBaixas(itens)
+    setInsumos(normalizados)
+    localStorage.setItem(CHAVE_BAIXAS, JSON.stringify(normalizados))
   }
 
-  const buscaNormalizada = busca.trim().toLowerCase()
+  // Coluna nova ou ainda sem ordem começa em ascendente; clicar de novo inverte.
+  function ordenarPor(chave) {
+    setOrdem((atual) =>
+      atual.coluna === chave
+        ? { coluna: chave, direcao: atual.direcao === 'asc' ? 'desc' : 'asc' }
+        : { coluna: chave, direcao: 'asc' },
+    )
+  }
 
-  const vendasFiltradas = vendas.filter((venda) => {
-    if (buscaNormalizada && !String(venda.fogazza ?? '').toLowerCase().includes(buscaNormalizada)) {
-      return false
+  const unidades = useMemo(() => {
+    const distintas = insumos.map((insumo) => insumo.unidade).filter((unidade) => unidade !== null)
+    return [...new Set(distintas)].sort((a, b) => a.localeCompare(b, 'pt-BR'))
+  }, [insumos])
+
+  // Evita o seletor preso a uma opção que não existe mais após um novo importe.
+  useEffect(() => {
+    if (unidadeSelecionada !== TODAS && !unidades.includes(unidadeSelecionada)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUnidadeSelecionada(TODAS)
     }
-    if (mesSelecionado !== 'todos') {
-      if (!venda.dataVenda) return false
-      const [, mes, ano] = venda.dataVenda.split('/')
-      if (`${ano}-${mes}` !== mesSelecionado) return false
-    }
-    return true
-  })
+  }, [unidades, unidadeSelecionada])
+
+  const linhas = useMemo(() => {
+    const filtrados = insumos.filter((insumo) => {
+      if (unidadeSelecionada !== TODAS && insumo.unidade !== unidadeSelecionada) return false
+      return casarBusca(busca, insumo)
+    })
+    const tipo = COLUNAS.find((coluna) => coluna.chave === ordem.coluna)?.tipo
+    return ordenarPorColuna(filtrados, ordem.coluna, tipo, ordem.direcao)
+  }, [insumos, busca, unidadeSelecionada, ordem])
 
   return (
     <>
@@ -76,16 +138,36 @@ export default function VendasPage() {
           <Toolbar
             busca={busca}
             onBuscaChange={setBusca}
-            mesSelecionado={mesSelecionado}
-            onMesChange={setMesSelecionado}
-            onImportar={() => setModalAberto(true)}
+            unidades={unidades}
+            unidadeSelecionada={unidadeSelecionada}
+            onUnidadeChange={setUnidadeSelecionada}
+            onImportar={() => setEtapa('regras')}
           />
-          <TabelaVendas vendas={vendasFiltradas} />
+          <TabelaVendas
+            linhas={linhas}
+            colunas={COLUNAS}
+            coluna={ordem.coluna}
+            direcao={ordem.direcao}
+            onOrdenar={ordenarPor}
+          />
         </div>
       </div>
 
-      <Modal aberto={modalAberto} onFechar={() => setModalAberto(false)} titulo="Importar vendas">
-        <ImportarVendas onImportado={aplicarVendas} onFechar={() => setModalAberto(false)} />
+      <Modal aberto={etapa === 'regras'} onFechar={() => setEtapa(null)} titulo="Regras de importação">
+        <RegrasImportacao
+          onConfirmar={() => setEtapa('arquivo')}
+          onCancelar={() => setEtapa(null)}
+        />
+      </Modal>
+
+      <Modal aberto={etapa === 'arquivo'} onFechar={() => setEtapa(null)} titulo="Importar vendas">
+        <ImportarVendas
+          onImportado={(itens) => {
+            aplicarBaixas(itens)
+            setEtapa(null)
+          }}
+          onFechar={() => setEtapa(null)}
+        />
       </Modal>
     </>
   )
