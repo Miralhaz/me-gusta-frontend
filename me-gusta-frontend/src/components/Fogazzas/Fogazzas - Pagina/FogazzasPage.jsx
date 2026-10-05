@@ -39,13 +39,17 @@ export default function FogazzasPage() {
         setPaginaAtual(res.data.page.number)
       })
       .catch((e) => {
-        if (e.response?.status === 204) setFogazzas([])
-        else console.error('Erro ao buscar fogazzas:', e)
+        if (e.response?.status === 204) {
+          setFogazzas([])
+        } else {
+          console.error('Erro ao buscar fogazzas:', e)
+        }
       })
   }
 
-  useEffect(buscarCategorias, [])
   useEffect(() => buscarFogazzas(0), [])
+
+  useEffect(buscarCategorias, [])
 
   const fogazzasFiltradas = useMemo(() => {
     return fogazzas.filter((f) => {

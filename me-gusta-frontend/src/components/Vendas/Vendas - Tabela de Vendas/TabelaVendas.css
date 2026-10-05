@@ -2,6 +2,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  table-layout: fixed;
 }
 
 .vendas-tabela thead th {
@@ -10,16 +11,59 @@
   border-bottom: 2px solid #333;
   font-weight: 700;
   color: #222;
+  background: #f4f4f4;
+  box-shadow: inset 0 -2px 0 #333;
+  font-size: medium;
 }
 
 .vendas-tabela tbody td {
   padding: 12px 8px;
   border-bottom: 1px solid #eee;
   color: #333;
+  word-break: break-word;
 }
 
 .vendas-tabela tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* Colunas de quantidade: alinhamento à direita e dígitos com largura estável. */
+.vendas-tabela .vendas-tabela-numero {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.vendas-th-ordenavel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+.vendas-th-ordenavel:hover {
+  color: var(--vermelho-primario);
+}
+
+.vendas-th-ordenavel:focus-visible {
+  outline: 2px solid var(--vermelho-primario);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Espaçamento fixo para o título não "pular" ao receber ou perder a seta. */
+.vendas-th-seta {
+  display: inline-block;
+  width: 12px;
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--vermelho-primario);
 }
 
 .vendas-tabela-vazia {
