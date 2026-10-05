@@ -32,7 +32,7 @@
   background-color: rgba(214, 40, 40, 0.12);
 }
 
-.vendas-toolbar-filtro-data {
+.vendas-toolbar-filtro-unidade {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -40,7 +40,7 @@
   color: #333;
 }
 
-.vendas-toolbar-filtro-data select {
+.vendas-toolbar-filtro-unidade select {
   padding: 7px 12px;
   border: 1px solid rgba(136, 136, 136, 0.5);
   border-radius: 20px;
@@ -51,8 +51,8 @@
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.vendas-toolbar-filtro-data select:hover,
-.vendas-toolbar-filtro-data select:focus {
+.vendas-toolbar-filtro-unidade select:hover,
+.vendas-toolbar-filtro-unidade select:focus {
   outline: none;
   border-color: var(--vermelho-primario);
   box-shadow: 0 0 0 3px rgba(214, 40, 40, 0.1);
