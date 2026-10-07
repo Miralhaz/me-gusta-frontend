@@ -16,6 +16,9 @@ export default function FogazzasPage() {
   const [busca, setBusca] = useState('')
   const [modoVisualizacao, setModoVisualizacao] = useState('lista')
   const [modalAberto, setModalAberto] = useState(null)
+  const [paginaAtual, setPaginaAtual] = useState(0)
+  const [totalPaginas, setTotalPaginas] = useState(0)
+  const tamanhoPagina = 10
 
   function buscarCategorias() {
     api.get('/categoria-fogazza')
@@ -25,10 +28,6 @@ export default function FogazzasPage() {
         setCategorias([])
       })
   }
-
-  const [paginaAtual, setPaginaAtual] = useState(0)
-  const [totalPaginas, setTotalPaginas] = useState(0)
-  const tamanhoPagina = 10
 
   function buscarFogazzas(pagina = 0) {
     api.get('/fogazzas/paginado', {
@@ -50,17 +49,7 @@ export default function FogazzasPage() {
 
   useEffect(() => buscarFogazzas(0), [])
 
-  function buscarFogazzas() {
-    api.get('/fogazzas')
-      .then((res) => setFogazzas(Array.isArray(res.data) ? res.data : []))
-      .catch((e) => {
-        if (e.response?.status !== 204) console.error('Erro ao buscar fogazzas:', e)
-        setFogazzas([])
-      })
-  }
-
   useEffect(buscarCategorias, [])
-  useEffect(buscarFogazzas, [])
 
   const fogazzasFiltradas = useMemo(() => {
     return fogazzas.filter((f) => {
@@ -103,9 +92,7 @@ export default function FogazzasPage() {
               >
                 Anterior
               </button>
-
               <span>{paginaAtual + 1} de {totalPaginas}</span>
-
               <button
                 disabled={paginaAtual >= totalPaginas - 1}
                 onClick={() => buscarFogazzas(paginaAtual + 1)}
