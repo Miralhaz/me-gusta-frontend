@@ -64,9 +64,26 @@
   flex-shrink: 0;
 }
 
+/* Agrupa o ícone de usuário e o "Sair" à direita da barra: o grupo recebe o
+   margin-left: auto que empurra os dois para a direita, mantendo o ícone
+   imediatamente à esquerda do "Sair" (a regra .navbar-sair permanece intacta). */
+.navbar-direita {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .navbar-sair {
   margin-left: auto;
   color: var(--branco-primario);
+}
+
+/* Ícone de usuário: branco (área escura da barra) e mantém-se branco também no
+   estado ativo (seletor .ativo com especificidade maior que o vermelho padrão) */
+.navbar-item.usuario .navbar-icone svg path,
+.navbar-item.usuario.ativo .navbar-icone svg path {
+  stroke: var(--branco-primario);
 }
 
 .navbar-sair .navbar-icone svg line,
