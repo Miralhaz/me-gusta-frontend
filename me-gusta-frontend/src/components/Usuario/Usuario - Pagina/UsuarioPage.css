@@ -1,0 +1,33 @@
+.pagina-usuario {
+  min-height: calc(100vh - 56px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: linear-gradient(120deg, #f5f5f5 10%, #ebebeb 90%);
+}
+
+/* Mesmo padrão do cartão do Cadastro, com largura ajustada para um
+   formulário de três campos (sem painel decorativo nem abas). */
+.pagina-usuario .cartao {
+  width: 560px;
+}
+
+.usuario-aviso {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.usuario-carregando {
+  color: #6b6b6b;
+  background: #f1f1f1;
+}
+
+.usuario-erro {
+  color: var(--vermelho-primario);
+  background: rgba(214, 40, 40, 0.07);
+  font-weight: 500;
+}

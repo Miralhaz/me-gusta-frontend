@@ -9,6 +9,7 @@ import RelatoriosPage from './components/Relatorios/Relatorios - Pagina/Relatori
 import EstoquePage from './components/Estoque/Estoque - Pagina/EstoquePage.jsx'
 import FogazzasPage from './components/Fogazzas/Fogazzas - Pagina/FogazzasPage.jsx'
 import ComprasPage from './components/Compras/Compras - Pagina/ComprasPage.jsx'
+import UsuarioPage from './components/Usuario/Usuario - Pagina/UsuarioPage.jsx'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/relatorios" element={<RelatoriosPage />} />
         <Route path="/estoque" element={<EstoquePage />} />
         <Route path="/compras" element={<ComprasPage />} />
+        <Route path="/usuario" element={<UsuarioPage />} />
         <Route path="*" element={<Navigate to="/cadastro" replace />} />
         <Route path="/fogazzas" element={<FogazzasPage />} />
       </Routes>

@@ -59,6 +59,13 @@ const ICONES = {
   ),
 }
 
+const ICONE_USUARIO = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="8" r="4" />
+    <path d="M20 21a8 8 0 0 0-16 0" />
+  </svg>
+)
+
 const ICONE_SAIR = (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -99,10 +106,20 @@ export default function Navbar() {
         </NavLink>
       ))}
 
-      <a className="navbar-item navbar-sair" href="#" onClick={(e) => { e.preventDefault(); handleSair() }}>
-        <span className="navbar-icone">{ICONE_SAIR}</span>
-        Sair
-      </a>
+      <div className="navbar-direita">
+        <NavLink
+          to="/usuario"
+          aria-label="Dados de usuário"
+          className={({ isActive }) => `navbar-item usuario${isActive ? ' ativo' : ''}`}
+        >
+          <span className="navbar-icone">{ICONE_USUARIO}</span>
+        </NavLink>
+
+        <a className="navbar-item navbar-sair" href="#" onClick={(e) => { e.preventDefault(); handleSair() }}>
+          <span className="navbar-icone">{ICONE_SAIR}</span>
+          Sair
+        </a>
+      </div>
     </nav>
   )
 }

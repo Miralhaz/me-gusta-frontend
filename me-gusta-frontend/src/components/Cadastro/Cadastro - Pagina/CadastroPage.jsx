@@ -5,20 +5,7 @@ import CadastroLadoDireito from '../Cadastro - Lado Direito/CadastroLadoDireito'
 import './CadastroPage.css'
 import api from '../../../provider/api'
 import Swal from 'sweetalert2'
-
-function somenteDigitos(valor) {
-  return String(valor).replace(/\D/g, '')
-}
-
-function mascaraTelefone(valor) {
-  let digitos = somenteDigitos(valor)
-  if (digitos.length > 11 && digitos.startsWith('55')) digitos = digitos.slice(2)
-  digitos = digitos.slice(0, 11)
-  if (digitos.length <= 2) return digitos ? `(${digitos}` : ''
-  if (digitos.length <= 6) return `(${digitos.slice(0, 2)}) ${digitos.slice(2)}`
-  if (digitos.length <= 10) return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 6)}-${digitos.slice(6)}`
-  return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 7)}-${digitos.slice(7)}`
-}
+import { mascaraTelefone, somenteDigitos } from '../../../utils/telefone'
 
 // Política de senha do backend (UsuarioRequestDto): @Size(min = 8, max = 128) e
 // @Pattern com letra maiúscula, minúscula, número e caractere especial.
@@ -113,7 +100,7 @@ export default function CadastroPage() {
       senha: formulario.senha,
       telefone: somenteDigitos(formulario.telefone)
     })
-    .then((resposta) => {
+    .then(() => {
       Swal.fire({
         icon: 'success',
         title: 'Cadastro realizado com sucesso!',

@@ -38,4 +38,12 @@ export function sair(navigate) {
   navigate('/login');
 }
 
+// Instância SEM o interceptor global (que limpa o cookie e redireciona em 401/403).
+// Usada para validar a senha em POST /login durante a troca de e-mail na página de
+// usuário: um 401 de "senha incorreta" NÃO deve encerrar a sessão do usuário logado.
+export const apiSemInterceptor = axios.create({
+  baseURL: "http://localhost:8080",
+  withCredentials: true,
+});
+
 export default api;
