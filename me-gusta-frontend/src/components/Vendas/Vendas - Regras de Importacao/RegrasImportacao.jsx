@@ -24,7 +24,7 @@ const REGRAS_IMPORTACAO = [
   },
   {
     titulo: 'Importação atômica',
-    texto: 'A importação é tudo ou nada: estoque insuficiente rejeita o arquivo inteiro (409) e nenhuma quantidade é alterada.',
+    texto: 'A importação é tudo ou nada: estoque insuficiente rejeita o arquivo inteiro e nenhuma quantidade é alterada.',
   },
   {
     titulo: 'Nomes não cadastrados são ignorados',
