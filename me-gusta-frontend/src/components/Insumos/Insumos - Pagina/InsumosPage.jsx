@@ -6,6 +6,7 @@ import Toolbar from '../Insumos - Toolbar/Toolbar'
 import Tabela from '../Insumos - Tabela de Insumos/TabelaInsumos'
 import CadastroCategoria from '../Insumos - Cadastro Categoria/CadastroCategoria'
 import CadastroInsumo from '../Insumos - Cadastro Insumo/CadastroInsumo'
+import Paginacao from '../../Comum em páginas/Paginacao/Paginacao'
 import { useInsumos } from '../../../hooks/useInsumos'
 import './InsumosPage.css'
 
@@ -36,25 +37,12 @@ export default function InsumosPage() {
           <Tabela insumos={state.insumos} />
 
           {state.totalPaginas > 1 && (
-            <div className="insumos-paginacao">
-              <button
-                type="button"
-                className="botao-outline"
-                disabled={state.pagina === 0}
-                onClick={() => actions.setPagina((p) => p - 1)}
-              >
-                Anterior
-              </button>
-              <span>Página {state.pagina + 1} de {state.totalPaginas}</span>
-              <button
-                type="button"
-                className="botao-outline"
-                disabled={state.pagina + 1 >= state.totalPaginas}
-                onClick={() => actions.setPagina((p) => p + 1)}
-              >
-                Próxima
-              </button>
-            </div>
+            <Paginacao
+              paginaAtual={state.pagina}
+              totalPaginas={state.totalPaginas}
+              onMudarPagina={actions.setPagina}
+              ariaLabel="Paginação de insumos"
+            />
           )}
         </div>
       </div>
