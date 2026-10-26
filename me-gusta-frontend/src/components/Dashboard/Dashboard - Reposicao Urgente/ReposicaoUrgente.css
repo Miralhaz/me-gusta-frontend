@@ -37,10 +37,14 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  display: flex;
+  flex-direction: column;
 }
 
 .reposicao-tabela thead tr {
   border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
 }
 
 .reposicao-tabela th {
