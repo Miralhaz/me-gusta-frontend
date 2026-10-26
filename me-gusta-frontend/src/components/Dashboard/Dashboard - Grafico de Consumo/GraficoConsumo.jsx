@@ -17,6 +17,7 @@ const CORES_RISCO = {
 
 const MAX_DIAS_EXIBICAO = 60
 const MAX_ITENS_EXIBICAO = 20
+const ITENS_VISIVEIS = 9
 const STORAGE_KEY = 'grafico-ruptura-filtro'
 
 function getFiltroSalvo() {
@@ -73,9 +74,14 @@ export default function GraficoConsumo() {
   const [mostrarTodos, setMostrarTodos] = useState(false)
   const [itemSelecionado, setItemSelecionado] = useState(null)
   const [buscaNome, setBuscaNome] = useState('')
+  const [indiceInicio, setIndiceInicio] = useState(0)
 
   const canvasRef = useRef(null)
   const chartRef = useRef(null)
+  const areaRef = useRef(null)
+  const trilhaRef = useRef(null)
+  const arrasteRef = useRef(null)
+  const deltaRolagemRef = useRef(0)
 
   const getHoje = () => new Date().toISOString().split('T')[0]
   const calcularIntervalo = (inicio, fim) => {
@@ -218,7 +224,94 @@ export default function GraficoConsumo() {
     return dados
   }, [dadosFiltrados, mostrarTodos])
 
-  const alturaCanvas = Math.max(300, dadosParaExibicao.length * 32 + 80)
+  const totalItens = dadosParaExibicao.length
+  const maxIndiceInicio = Math.max(0, totalItens - ITENS_VISIVEIS)
+
+  const dadosVisiveis = useMemo(
+    () => dadosParaExibicao.slice(indiceInicio, indiceInicio + ITENS_VISIVEIS),
+    [dadosParaExibicao, indiceInicio]
+  )
+
+  // Mantém a janela dentro dos limites quando a quantidade de itens muda
+  useEffect(() => {
+    setIndiceInicio((atual) => Math.min(atual, maxIndiceInicio))
+  }, [maxIndiceInicio])
+
+  // Scroll do mouse "dentro" do gráfico: rola os itens sem mover a página
+  useEffect(() => {
+    const area = areaRef.current
+    if (!area) return
+
+    const aoRolar = (e) => {
+      if (maxIndiceInicio <= 0) return
+      e.preventDefault()
+
+      deltaRolagemRef.current += e.deltaY
+      if (Math.abs(deltaRolagemRef.current) < 24) return
+
+      const passo = deltaRolagemRef.current > 0 ? 1 : -1
+      deltaRolagemRef.current = 0
+      setIndiceInicio((atual) => Math.min(Math.max(atual + passo, 0), maxIndiceInicio))
+    }
+
+    area.addEventListener('wheel', aoRolar, { passive: false })
+    return () => area.removeEventListener('wheel', aoRolar)
+  }, [maxIndiceInicio])
+
+  const aoTeclar = (e) => {
+    if (maxIndiceInicio <= 0) return
+    const passos = { ArrowDown: 1, ArrowUp: -1, PageDown: ITENS_VISIVEIS, PageUp: -ITENS_VISIVEIS }
+    if (e.key === 'Home') {
+      e.preventDefault()
+      setIndiceInicio(0)
+      return
+    }
+    if (e.key === 'End') {
+      e.preventDefault()
+      setIndiceInicio(maxIndiceInicio)
+      return
+    }
+    const passo = passos[e.key]
+    if (!passo) return
+    e.preventDefault()
+    setIndiceInicio((atual) => Math.min(Math.max(atual + passo, 0), maxIndiceInicio))
+  }
+
+  const iniciarArraste = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.currentTarget.setPointerCapture?.(e.pointerId)
+    const trilha = trilhaRef.current?.getBoundingClientRect()
+    const thumb = e.currentTarget.getBoundingClientRect()
+    arrasteRef.current = {
+      startY: e.clientY,
+      startIndex: indiceInicio,
+      trackHeight: trilha?.height ?? 0,
+      thumbHeight: thumb.height,
+    }
+  }
+
+  const moverArraste = (e) => {
+    const arraste = arrasteRef.current
+    if (!arraste) return
+    const percurso = Math.max(arraste.trackHeight - arraste.thumbHeight, 1)
+    const delta = Math.round(((e.clientY - arraste.startY) / percurso) * maxIndiceInicio)
+    setIndiceInicio(Math.min(Math.max(arraste.startIndex + delta, 0), maxIndiceInicio))
+  }
+
+  const finalizarArraste = (e) => {
+    arrasteRef.current = null
+    if (e.currentTarget.hasPointerCapture?.(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId)
+    }
+  }
+
+  const percentualThumb = totalItens > 0
+    ? Math.min(100, Math.max(8, (ITENS_VISIVEIS / totalItens) * 100))
+    : 100
+  const percentualTopo = maxIndiceInicio > 0
+    ? (indiceInicio / maxIndiceInicio) * (100 - percentualThumb)
+    : 0
 
   const renderizarGrafico = useCallback((dados) => {
     if (!canvasRef.current || !dados.length) return
@@ -390,7 +483,7 @@ export default function GraficoConsumo() {
             }
           },
         layout: {
-          padding: { right: 20, bottom: 72 }
+          padding: { right: 16, bottom: 8 }
         }
       }
     })
@@ -398,12 +491,12 @@ export default function GraficoConsumo() {
 
   useEffect(() => {
     if (!canvasRef.current) return
-    if (dadosParaExibicao.length > 0) {
-      renderizarGrafico(dadosParaExibicao)
+    if (dadosVisiveis.length > 0) {
+      renderizarGrafico(dadosVisiveis)
     } else {
       chartRef.current?.destroy()
     }
-  }, [dadosParaExibicao, renderizarGrafico])
+  }, [dadosVisiveis, renderizarGrafico])
 
   const handleAplicarFiltro = () => {
     if (!dataInicio || !dataFim) return
@@ -412,6 +505,7 @@ export default function GraficoConsumo() {
       return
     }
     salvarFiltro(dataInicio, dataFim)
+    setIndiceInicio(0)
     buscarPrevisaoRuptura(dataInicio, dataFim)
   }
 
@@ -434,6 +528,7 @@ export default function GraficoConsumo() {
   const handleBuscaChange = (e) => {
     setBuscaNome(e.target.value)
     setMostrarTodos(false)
+    setIndiceInicio(0)
   }
 
   const validos = dadosFiltrados
@@ -512,7 +607,10 @@ export default function GraficoConsumo() {
               <input
                 type="checkbox"
                 checked={mostrarTodos}
-                onChange={(e) => setMostrarTodos(e.target.checked)}
+                onChange={(e) => {
+                  setMostrarTodos(e.target.checked)
+                  setIndiceInicio(0)
+                }}
               />
               <span>Mostrar todos ({validos.length})</span>
             </label>
@@ -520,16 +618,42 @@ export default function GraficoConsumo() {
         </div>
       </div>
 
-      <div className="grafico-area" style={{ minHeight: alturaCanvas }}>
+      <div
+        className="grafico-area"
+        ref={areaRef}
+        tabIndex={maxIndiceInicio > 0 ? 0 : -1}
+        role="group"
+        aria-label="Gráfico de previsão de ruptura por insumo"
+        onKeyDown={aoTeclar}
+      >
         {carregando
           ? <span className="grafico-carregando">Carregando...</span>
           : erro
             ? <span className="grafico-vazio">{erro}</span>
-            : dadosParaExibicao.length > 0
+            : dadosVisiveis.length > 0
               ? <canvas ref={canvasRef} />
               : <span className="grafico-vazio">Sem dados para exibir</span>
         }
+
+        {!carregando && !erro && maxIndiceInicio > 0 && (
+          <div className="grafico-scrollbar" aria-hidden="true" ref={trilhaRef}>
+            <div
+              className="grafico-scrollbar-thumb"
+              style={{ height: `${percentualThumb}%`, top: `${percentualTopo}%` }}
+              onPointerDown={iniciarArraste}
+              onPointerMove={moverArraste}
+              onPointerUp={finalizarArraste}
+              onPointerCancel={finalizarArraste}
+            />
+          </div>
+        )}
       </div>
+
+      {maxIndiceInicio > 0 && (
+        <div className="grafico-contador">
+          Exibindo {indiceInicio + 1}–{indiceInicio + dadosVisiveis.length} de {totalItens} insumos
+        </div>
+      )}
 
       {avisoTexto && !mostrarTodos && (
         <div className="grafico-aviso">

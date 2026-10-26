@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import api from '../../../provider/api'
 import Navbar from '../../Comum em páginas/Navbar/Navbar'
 import Modal from '../../Comum em páginas/Modal/Modal'
+import Paginacao from '../../Comum em páginas/Paginacao/Paginacao'
 import ToolbarEstoque from '../Estoque - Toolbar/ToolbarEstoque'
 import TabelaEstoque from '../Estoque - Tabela/TabelaEstoque'
 import CadastroSaida from '../Estoque - Cadastro Saida/CadastroSaida'
@@ -205,25 +206,12 @@ export default function EstoquePage() {
           />
           <TabelaEstoque itens={itens} onEditar={abrirEdicao} onVerLotes={abrirLotes} />
           {totalPaginas > 1 && (
-            <div className="estoque-paginacao">
-              <button
-                type="button"
-                className="botao-outline"
-                disabled={pagina === 0}
-                onClick={() => setPagina((p) => p - 1)}
-              >
-                Anterior
-              </button>
-              <span>Página {pagina + 1} de {totalPaginas}</span>
-              <button
-                type="button"
-                className="botao-outline"
-                disabled={pagina + 1 >= totalPaginas}
-                onClick={() => setPagina((p) => p + 1)}
-              >
-                Próxima
-              </button>
-            </div>
+            <Paginacao
+              paginaAtual={pagina}
+              totalPaginas={totalPaginas}
+              onMudarPagina={setPagina}
+              ariaLabel="Paginação de estoque"
+            />
           )}
         </div>
       </div>

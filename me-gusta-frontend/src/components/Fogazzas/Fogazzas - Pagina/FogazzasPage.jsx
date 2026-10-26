@@ -7,6 +7,7 @@ import Toolbar from '../Fogazzas - Toolbar/Toolbar'
 import Tabela from '../Fogazzas - Tabela/TabelaFogazzas'
 import CadastroCategoriaFogazza from '../Fogazzas - Cadastro Categoria/CadastroCategoriaFogazza'
 import CadastroFogazza from '../Fogazzas - Cadastro Fogazza/CadastroFogazza'
+import Paginacao from '../../Comum em páginas/Paginacao/Paginacao'
 import './FogazzasPage.css'
 
 export default function FogazzasPage() {
@@ -85,21 +86,12 @@ export default function FogazzasPage() {
           <Tabela fogazzas={fogazzasFiltradas} />
 
           {totalPaginas > 1 && (
-            <div className="fogazzas-paginacao">
-              <button
-                disabled={paginaAtual === 0}
-                onClick={() => buscarFogazzas(paginaAtual - 1)}
-              >
-                Anterior
-              </button>
-              <span>{paginaAtual + 1} de {totalPaginas}</span>
-              <button
-                disabled={paginaAtual >= totalPaginas - 1}
-                onClick={() => buscarFogazzas(paginaAtual + 1)}
-              >
-                Próxima
-              </button>
-            </div>
+            <Paginacao
+              paginaAtual={paginaAtual}
+              totalPaginas={totalPaginas}
+              onMudarPagina={(p) => buscarFogazzas(p)}
+              ariaLabel="Paginação de fogazzas"
+            />
           )}
         </div>
       </div>

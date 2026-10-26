@@ -15,29 +15,96 @@
   border-radius: 8px;
   padding: 20px 24px;
   background: rgba(224, 224, 224, 0.4);
+  --paginacao-ativo: #e05a3a;
+  --paginacao-texto: #9e9e9e;
+  --paginacao-texto-hover: #5f5f5f;
 }
 
-.estoque-paginacao {
+/* ===== Paginação (mesmo estilo de Insumos, Compras e Fogazzas) ===== */
+
+.estoque-conteudo nav[aria-label="Paginação de estoque"] {
   flex-shrink: 0;
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 16px;
   margin-top: 12px;
-  font-size: 0.8rem;
-  color: #333;
+  font-family: 'Roboto', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--paginacao-texto);
 }
 
-.estoque-paginacao .botao-outline {
-  padding: 4px 12px;
-  font-size: 0.8rem;
+.estoque-conteudo nav[aria-label="Paginação de estoque"] button {
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--paginacao-texto);
+  font: inherit;
+  cursor: pointer;
+  transition: color 0.18s ease;
 }
 
-.estoque-paginacao .botao-outline:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-  background-color: #fff;
-  color: #333;
-  border-color: #333;
+.estoque-conteudo nav[aria-label="Paginação de estoque"] button:hover:not(:disabled) {
+  background: transparent;
+  color: var(--paginacao-texto-hover);
+}
+
+.estoque-conteudo nav[aria-label="Paginação de estoque"] button:focus-visible {
+  outline: 2px solid rgba(224, 90, 58, 0.55);
+  outline-offset: 2px;
+}
+
+.estoque-conteudo nav[aria-label="Paginação de estoque"] button:disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+.estoque-conteudo nav[aria-label="Paginação de estoque"] button[aria-current="page"],
+.estoque-conteudo nav[aria-label="Paginação de estoque"] button[aria-current="page"]:hover {
+  min-width: 48px;
+  padding: 6px 14px;
+  background: var(--paginacao-ativo);
+  color: #fff;
+  cursor: default;
+}
+
+.estoque-conteudo nav[aria-label="Paginação de estoque"] span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  color: #bdbdbd;
+  user-select: none;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .estoque-conteudo nav[aria-label="Paginação de estoque"] {
+    gap: 2px;
+  }
+
+  .estoque-conteudo nav[aria-label="Paginação de estoque"] button,
+  .estoque-conteudo nav[aria-label="Paginação de estoque"] span {
+    min-width: 28px;
+    padding: 6px 4px;
+    font-size: 14px;
+  }
+
+  .estoque-conteudo nav[aria-label="Paginação de estoque"] button[aria-current="page"] {
+    min-width: 36px;
+    padding: 6px 8px;
+  }
 }
