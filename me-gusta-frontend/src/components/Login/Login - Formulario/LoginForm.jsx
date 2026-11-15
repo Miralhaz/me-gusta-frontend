@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './LoginForm.css'
 
-export default function LoginForm({ form, onChange, onSubmit }) {
+export default function LoginForm({ form, onChange, onSubmit, onEsqueciSenha }) {
     const [mostrarSenha, setMostrarSenha] = useState(false)
 
     return (
@@ -40,6 +40,10 @@ export default function LoginForm({ form, onChange, onSubmit }) {
                     </button>
                 </div>
             </div>
+
+            <button type="button" className="link-esqueci-senha" onClick={onEsqueciSenha}>
+                Esqueci minha senha
+            </button>
         </form>
     )
 }
