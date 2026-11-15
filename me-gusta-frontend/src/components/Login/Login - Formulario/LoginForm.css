@@ -79,3 +79,29 @@
   outline: 2px solid rgba(214, 40, 40, 0.3);
   border-radius: 4px;
 }
+
+.link-esqueci-senha {
+  align-self: flex-start;
+  margin-top: -8px;
+  padding: 2px 0;
+  border: none;
+  background: none;
+  color: var(--vermelho-primario);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-esqueci-senha:hover {
+  color: #740202;
+}
+
+.link-esqueci-senha:focus {
+  outline: none;
+}
+
+.link-esqueci-senha:focus-visible {
+  outline: 2px solid rgba(214, 40, 40, 0.3);
+  border-radius: 4px;
+}

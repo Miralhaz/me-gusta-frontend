@@ -2,6 +2,7 @@ import './App.css'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import CadastroPage from './components/Cadastro/Cadastro - Pagina/CadastroPage.jsx'
 import LoginPage from './components/Login/Login - Pagina/LoginPage.jsx'
+import EsqueciSenhaPage from './components/Login/Esqueci Senha - Pagina/EsqueciSenhaPage.jsx'
 import DashboardPage from './components/Dashboard/Dashboard - Pagina/DashboardPage.jsx'
 import InsumosPage from './components/Insumos/Insumos - Pagina/InsumosPage.jsx'
 import VendasPage from './components/Vendas/Vendas - Pagina/VendasPage.jsx'
@@ -20,6 +21,7 @@ function App() {
       <Routes>
         <Route path="/cadastro" element={<CadastroPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/esqueci-senha" element={<EsqueciSenhaPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/insumos" element={<InsumosPage />} />
         <Route path="/vendas" element={<VendasPage />} />

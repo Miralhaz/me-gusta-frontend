@@ -1,0 +1,120 @@
+.form-esqueci-senha {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-esqueci-senha .campos {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-esqueci-senha label {
+  font-size: 14px;
+  color: var(--texto-titulo);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.form-esqueci-senha input {
+  height: 42px;
+  padding: 0 10px;
+  border: 1px solid #d1d1d1;
+  background-color: var(--branco-primario);
+  color: var(--texto-titulo);
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.12s ease;
+}
+
+.form-esqueci-senha input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--branco-primario) inset !important;
+  -webkit-text-fill-color: var(--texto-titulo) !important;
+  border-color: var(--vermelho-primario) !important;
+}
+
+.form-esqueci-senha input:focus {
+  outline: 2px solid rgba(214, 40, 40, 0.15);
+  border-color: var(--vermelho-primario);
+}
+
+.form-esqueci-senha .linha-senha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-esqueci-senha .linha-senha input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.form-esqueci-senha .botao-visibilidade-senha {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  width: 42px;
+  padding: 8px;
+  border: 1px solid #d1d1d1;
+  border-radius: 8px;
+  background-color: var(--branco-primario);
+  color: var(--texto-titulo);
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+}
+
+.form-esqueci-senha .botao-visibilidade-senha img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.form-esqueci-senha .botao-visibilidade-senha:hover {
+  border-color: var(--vermelho-primario);
+}
+
+.form-esqueci-senha .botao-visibilidade-senha:focus-visible {
+  outline: 2px solid rgba(214, 40, 40, 0.15);
+  border-color: var(--vermelho-primario);
+}
+
+.form-esqueci-senha .requisitos-senha {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  font-size: 12px;
+}
+
+.form-esqueci-senha .requisitos-senha li {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  line-height: 1.35;
+  color: #6b6b6b;
+}
+
+.form-esqueci-senha .requisitos-senha .marcador-requisito {
+  flex: 0 0 auto;
+  font-size: 11px;
+}
+
+.form-esqueci-senha .requisitos-senha .pendente .marcador-requisito {
+  color: #8a8a8a;
+}
+
+.form-esqueci-senha .requisitos-senha .atendido {
+  color: var(--texto-titulo);
+}
+
+.form-esqueci-senha .requisitos-senha .atendido .marcador-requisito {
+  color: var(--vermelho-primario);
+  font-weight: 700;
+}

@@ -59,7 +59,12 @@ export default function LoginPage() {
 
           <h2 className="titulo">Faça login no sistema aqui!</h2>
 
-          <LoginForm form={formulario} onChange={atualizarDados} onSubmit={enviarDados} />
+          <LoginForm
+            form={formulario}
+            onChange={atualizarDados}
+            onSubmit={enviarDados}
+            onEsqueciSenha={() => navigate('/esqueci-senha')}
+          />
         </div>
 
         <LoginLadoDireito />
