@@ -3,6 +3,8 @@
   border-collapse: collapse;
   font-size: 0.9rem;
   table-layout: fixed;
+  align-items: center;
+  justify-content: center;
 }
 
 .vendas-tabela thead th {
@@ -27,9 +29,13 @@
   border-bottom: none;
 }
 
+.vendas-tabela tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.069);
+}
+
 /* Colunas de quantidade: alinhamento à direita e dígitos com largura estável. */
 .vendas-tabela .vendas-tabela-numero {
-  text-align: right;
+  text-align: center;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }

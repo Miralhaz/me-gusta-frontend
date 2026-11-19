@@ -3,6 +3,16 @@ import './TabelaVendas.css'
 export default function TabelaVendas({ linhas, colunas, coluna, direcao, onOrdenar }) {
   const lista = Array.isArray(linhas) ? linhas : []
 
+  const formatarValor = (valor) => {
+    if (typeof valor === 'number') {
+      return valor.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+    return valor;
+  }
+
   if (lista.length === 0) {
     return <p className="vendas-tabela-vazia">Nenhum insumo encontrado.</p>
   }
@@ -42,7 +52,9 @@ export default function TabelaVendas({ linhas, colunas, coluna, direcao, onOrden
                 key={colunaAtual.chave}
                 className={colunaAtual.tipo === 'numero' ? 'vendas-tabela-numero' : undefined}
               >
-                {insumo[colunaAtual.chave] ?? '—'}
+                {colunaAtual.tipo === 'numero'
+                  ? formatarValor(insumo[colunaAtual.chave])
+                  : (insumo[colunaAtual.chave] ?? '—')}
               </td>
             ))}
           </tr>
