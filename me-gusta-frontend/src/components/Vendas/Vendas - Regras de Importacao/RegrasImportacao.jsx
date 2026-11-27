@@ -7,6 +7,10 @@ const REGRAS_IMPORTACAO = [
     texto: 'A importação aceita somente planilhas no formato .xlsx.',
   },
   {
+    titulo: 'Tamanho máximo de 10 MB',
+    texto: 'A planilha deve ter no máximo 10 MB.',
+  },
+  {
     titulo: 'Somente o relatório de itens vendidos',
     texto: 'O arquivo deve ser o relatório de itens vendidos exportado pela plataforma, reconhecido pelas colunas de cabeçalho "Nome Prod" e "Qtd.".',
   },

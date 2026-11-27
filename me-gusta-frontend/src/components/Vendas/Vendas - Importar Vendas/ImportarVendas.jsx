@@ -3,13 +3,29 @@ import api from '../../../provider/api'
 import Swal from 'sweetalert2'
 import './ImportarVendas.css'
 
+const LIMITE_TAMANHO = 10 * 1024 * 1024
+
 export default function ImportarVendas({ onImportado, onFechar }) {
   const [arquivo, setArquivo] = useState(null)
   const [enviando, setEnviando] = useState(false)
 
+  function mostrarErroTamanho() {
+    Swal.fire({
+      icon: 'error',
+      title: 'Arquivo muito grande',
+      text: 'A planilha deve ter no máximo 10 MB.',
+      timer: 3500,
+      showConfirmButton: false,
+    })
+  }
+
   function handleSubmit(e) {
     e.preventDefault()
     if (!arquivo || enviando) return
+    if (arquivo.size > LIMITE_TAMANHO) {
+      mostrarErroTamanho()
+      return
+    }
     setEnviando(true)
 
     const formData = new FormData()
@@ -48,6 +64,8 @@ export default function ImportarVendas({ onImportado, onFechar }) {
             timer: 3500,
             showConfirmButton: false,
           })
+        } else if (erro.response?.status === 413) {
+          mostrarErroTamanho()
         } else if (erro.response?.status === 401) {
           Swal.fire({
             icon: 'error',
